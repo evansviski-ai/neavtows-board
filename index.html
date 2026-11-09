@@ -258,7 +258,14 @@
         .pain-scenario {
             background: var(--yellow-light); border: 1px solid var(--yellow-border); color: #5a4600;
             padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 1.05rem; line-height: 1.4;
+            position: relative;
         }
+        .pain-change-btn {
+            display: block; margin: 8px auto 0; background: white; border: 1px solid var(--yellow-border);
+            color: #5a4600; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; cursor: pointer;
+        }
+        .pain-change-btn:hover { background: #ffebc2; }
+        
         .pain-input-group { display: flex; gap: 8px; flex-direction: column; }
         .pain-input-group input {
             padding: 10px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.9rem; outline: none;
@@ -332,8 +339,9 @@
 
         <!-- ВКЛАДКА 2: БОЛИ КЛИЕНТА -->
         <div id="tabPains" class="tab-content">
-            <div class="pain-scenario" id="painScenarioText">
-                Загрузка сценария...
+            <div class="pain-scenario">
+                <span id="painScenarioText">Загрузка...</span>
+                <button class="pain-change-btn" id="nextScenarioBtn">🔄 Сменить ситуацию для всех</button>
             </div>
             
             <div class="pain-input-group">
@@ -371,9 +379,6 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // ============================================================
-    //  КОНФИГУРАЦИЯ ДОСКИ
-    // ============================================================
     const ZONES = [
         { id: "z1", title: "Поток 1 · Переработка", color: "#4a7dff", lanes: [{ id: "l1", title: "Продукты на переработку", hint: "Аудит существующих неавто-продуктов." }] },
         { id: "z2", title: "Поток 2 · Новые продукты", color: "#22a06b", lanes: [
@@ -391,13 +396,13 @@
     ];
 
     let state = { lanes: [], cards: [] };
+    let currentScenario = ""; // Глобальная ситуация
+
     const boardRef = ref(db, "ws-board/current");
     const leaderboardRef = ref(db, "ws-board/leaderboard");
     const painsRef = ref(db, "ws-board/pains_ideas");
+    const scenarioRef = ref(db, "ws-board/current_scenario"); // Ссылка на ситуацию в базе
 
-    // ============================================================
-    //  АУТЕНТИФИКАЦИЯ
-    // ============================================================
     signInAnonymously(auth).catch((error) => {
         setStatus("ошибка", "offline");
     });
@@ -408,6 +413,7 @@
             initRealtimeListener();
             initLeaderboardListener();
             initPainsListener();
+            initScenarioListener();
         } else {
             setStatus("офлайн", "offline");
         }
@@ -447,9 +453,6 @@
 
     function uid() { return Math.random().toString(36).slice(2, 10); }
 
-    // ============================================================
-    //  РЕНДЕР ДОСКИ
-    // ============================================================
     function render() {
         const board = document.getElementById("board");
         board.innerHTML = "";
@@ -669,7 +672,7 @@
     }
 
     // ============================================================
-    //  ИГРА 2: БОЛИ КЛИЕНТА
+    //  ИГРА 2: БОЛИ КЛИЕНТА (СИНХРОНИЗАЦИЯ)
     // ============================================================
     const SCENARIOS = [
         "Клиент купил машину в кредит и боится потерять работу.",
@@ -678,20 +681,36 @@
         "Клиент планирует провести все лето на даче.",
         "Клиент открыл небольшой бизнес (кофейню)."
     ];
-    
-    let currentScenario = "";
 
-    document.getElementById("openGameBtn").addEventListener("click", () => {
-        // При открытии выбираем случайный сценарий
-        currentScenario = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
-        document.getElementById("painScenarioText").textContent = currentScenario;
-    });
+    // Слушаем изменения ситуации в базе (чтобы у всех было одинаково)
+    function initScenarioListener() {
+        onValue(scenarioRef, (snapshot) => {
+            const savedScenario = snapshot.val();
+            if (savedScenario) {
+                currentScenario = savedScenario;
+                document.getElementById("painScenarioText").textContent = currentScenario;
+            } else {
+                // Если в базе еще нет ситуации, генерируем первую и сохраняем
+                changeScenario();
+            }
+        });
+    }
+
+    // Функция смены ситуации (вызывается кнопкой)
+    function changeScenario() {
+        const newScenario = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+        set(scenarioRef, newScenario);
+        document.getElementById("painIdeaInput").value = ""; // Очищаем поле ввода
+    }
+
+    document.getElementById("nextScenarioBtn").onclick = changeScenario;
 
     document.getElementById("addPainBtn").onclick = () => {
         const author = document.getElementById("painAuthorInput").value.trim() || "Аноним";
         const idea = document.getElementById("painIdeaInput").value.trim();
         if (!idea) return;
         
+        // Сохраняем идею вместе с ситуацией, к которой она относится
         set(push(painsRef), { author: author, idea: idea, scenario: currentScenario }).then(() => {
             document.getElementById("painIdeaInput").value = "";
         });
@@ -703,8 +722,17 @@
             wall.innerHTML = "";
             if (!data) { wall.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:0.9rem;">Пока нет идей</div>'; return; }
             
-            const ideas = Object.values(data).reverse(); // Новые сверху
-            ideas.forEach(item => {
+            const ideas = Object.values(data).reverse(); 
+            
+            // Показываем только те идеи, которые относятся к ТЕКУЩЕЙ ситуации
+            const filteredIdeas = ideas.filter(item => item.scenario === currentScenario);
+
+            if (filteredIdeas.length === 0) {
+                wall.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:0.9rem;">Пока нет идей для этой ситуации. Будьте первым!</div>';
+                return;
+            }
+
+            filteredIdeas.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "pain-card";
                 div.innerHTML = `<strong>${item.idea}</strong><span class="author">Предложил: ${item.author}</span>`;
@@ -717,10 +745,8 @@
     //  ЭКСПОРТ ДАННЫХ (CSV)
     // ============================================================
     document.getElementById("exportBtn").onclick = () => {
-        // Заголовки таблицы
         const rows = [['Поток', 'Тема (Дорожка)', 'Текст карточки', 'Владелец', 'Лайки', 'Дизлайки']];
         
-        // Проходим по всем зонам, затем по дорожкам, затем по карточкам
         ZONES.forEach(zone => {
             const zoneLanes = state.lanes.filter(l => l.zoneId === zone.id);
             zoneLanes.forEach(lane => {
@@ -738,10 +764,7 @@
             });
         });
 
-        // Конвертируем в CSV (разделитель - точка с запятой для Excel, добавляем BOM для кириллицы)
         const csvContent = '\ufeff' + rows.map(e => e.map(item => `"${String(item).replace(/"/g, '""')}"`).join(';')).join('\r\n');
-        
-        // Скачиваем
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
