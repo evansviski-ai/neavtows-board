@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>WS · неАвто продукты · дилерский канал</title>
     <style>
-        /* ===== ЦВЕТА И БАЗА ===== */
         :root {
             --primary: rgb(56, 5, 108);
             --accent: rgb(121, 255, 58);
@@ -26,234 +25,111 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background: var(--bg);
-            font-family: 'Arial', Helvetica, sans-serif;
-            color: var(--text);
-            padding: 8px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
+        body { background: var(--bg); font-family: 'Arial', Helvetica, sans-serif; color: var(--text); padding: 8px; min-height: 100vh; display: flex; flex-direction: column; }
         @media (min-width: 768px) { body { padding: 16px; } }
 
         /* ===== ШАПКА ===== */
-        header {
-            background: white;
-            border-radius: 16px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid var(--border-light);
-        }
-
-        header h1 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary);
-            border-left: 4px solid var(--accent);
-            padding-left: 10px;
-            margin-right: auto;
-            line-height: 1.3;
-        }
-
-        @media (min-width: 600px) { header h1 { font-size: 1.3rem; } }
-
-        .btn {
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid var(--border-light);
-            background: white;
-            transition: background 0.15s;
-        }
+        header { background: white; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-light); }
+        .header-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
+        h1 { font-size: 1.1rem; font-weight: 600; color: var(--primary); border-left: 4px solid var(--accent); padding-left: 10px; margin-right: auto; line-height: 1.3; }
+        @media (min-width: 600px) { h1 { font-size: 1.3rem; } }
+        
+        .btn { padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-light); background: white; transition: background 0.15s; }
         .btn:hover { background: #eef1f5; }
         .btn-purple { background: var(--purple-light); color: var(--purple-border); border-color: var(--purple-border); }
         .btn-purple:hover { background: rgba(120, 80, 200, 0.2); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: #4a0a8a; }
 
-        .status-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: #ccc;
-            display: inline-block;
-            margin-right: 4px;
-        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; display: inline-block; margin-right: 4px; }
         .status-dot.online { background: var(--green-border); }
         .status-dot.offline { background: var(--red-border); }
 
-        /* ===== ОСНОВНАЯ СЕТКА ПОТОКОВ ===== */
-        main {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex: 1;
-        }
+        /* Переключатель этапов */
+        .stage-switcher { display: flex; background: var(--bg); border-radius: 8px; padding: 4px; border: 1px solid var(--border-light); flex-wrap: wrap; }
+        .stage-btn { background: transparent; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--muted); transition: 0.2s; flex: 1; }
+        .stage-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        @media (min-width: 900px) {
-            main {
-                display: grid;
-                grid-template-columns: repeat(5, 1fr);
-                align-items: start;
-            }
-        }
+        /* Подсказка этапа */
+        .stage-hint { background: var(--primary-light); border-radius: 8px; padding: 10px; font-size: 0.9rem; color: var(--primary); display: flex; gap: 8px; align-items: flex-start; }
+        .stage-hint strong { display: block; margin-bottom: 2px; }
 
-        .zone {
-            background: var(--card-bg);
-            border: 1px solid var(--border-light);
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            min-height: 200px;
-        }
+        /* ===== СЕТКА ===== */
+        main { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+        @media (min-width: 900px) { main { display: grid; grid-template-columns: repeat(4, 1fr); align-items: start; } }
 
-        .zone-header {
-            padding: 10px 12px;
-            background: var(--primary-light);
-            border-bottom: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .zone-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            line-height: 1.3;
-        }
-
+        .zone { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.02); min-height: 200px; }
+        .zone-header { padding: 10px 12px; background: var(--primary-light); border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+        .zone-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.03em; line-height: 1.3; }
         .zone-header .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
 
         .lanes-container { padding: 8px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
 
-        /* ===== ТЕМА (ДОРОЖКА) ===== */
-        .lane {
-            background: #f7f8fa;
-            border: 1px dashed #d3d7de;
-            border-radius: 10px;
-            padding: 8px;
-            min-height: 60px;
-        }
-
-        .lane.drag-over { border-color: var(--primary); background: var(--primary-light); }
-
+        /* ===== ТЕМА ===== */
+        .lane { background: #f7f8fa; border: 1px dashed #d3d7de; border-radius: 10px; padding: 8px; min-height: 60px; }
         .lane-header { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
-
         .lane-title-wrap { display: flex; align-items: center; gap: 6px; }
         .lane-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
-        
         .lane-delete-btn { background: none; border: none; cursor: pointer; color: #a0a6b0; font-size: 0.9rem; padding: 0 4px; }
         .lane-delete-btn:hover { color: var(--red-border); }
-
-        .lane-hint-btn {
-            background: none; border: none; cursor: pointer; font-size: 0.75rem;
-            color: var(--muted); padding: 2px 6px; border-radius: 4px; transition: background 0.15s; white-space: nowrap;
-        }
-        .lane-hint-btn:hover { background: #eef1f5; }
-
-        .lane-hint {
-            font-size: 0.75rem; color: var(--muted); background: #eef1f5; border-radius: 6px;
-            padding: 4px 8px; margin-bottom: 6px; line-height: 1.4; display: none; word-break: break-word;
-        }
+        .lane-hint-btn { background: none; border: none; cursor: pointer; font-size: 0.75rem; color: var(--muted); padding: 2px 6px; border-radius: 4px; }
+        .lane-hint { font-size: 0.75rem; color: var(--muted); background: #eef1f5; border-radius: 6px; padding: 4px 8px; margin-bottom: 6px; line-height: 1.4; display: none; word-break: break-word; }
         .lane-hint.visible { display: block; }
 
         /* ===== КАРТОЧКА ===== */
-        .card {
-            background: white; border: 1px solid #dcdfe5; border-left: 4px solid var(--primary);
-            border-radius: 8px; padding: 8px; margin-bottom: 6px; cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.15s, transform 0.1s;
-        }
-        .card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.08); transform: translateY(-1px); }
-        .card.dragging { opacity: 0.4; }
-
+        .card { background: white; border: 1px solid #dcdfe5; border-left: 4px solid var(--primary); border-radius: 8px; padding: 8px; margin-bottom: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.2s; position: relative; }
+        .card:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+        
         .card-text { font-size: 0.9rem; line-height: 1.4; word-break: break-word; }
         .card-text:empty::before { content: 'Нажмите, чтобы заполнить...'; color: #a8aeb8; }
 
-        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; flex-wrap: wrap; gap: 6px; }
+        /* Владелец */
+        .card-owner-badge { font-size: 0.75rem; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; }
 
-        .card-reactions { display: flex; gap: 4px; }
-        .reaction-pill { font-size: 0.75rem; padding: 2px 6px; border-radius: 12px; background: #f1f5f9; border: 1px solid var(--border-light); }
-        
-        .card-owner { font-size: 0.75rem; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; }
+        /* Голосование (Этап 2) */
+        .vote-bar { display: flex; gap: 6px; margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px; }
+        .vote-btn { flex: 1; padding: 4px; border: 1px solid #dcdfe5; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85rem; display: flex; justify-content: center; align-items: center; gap: 4px; transition: background 0.1s; }
+        .vote-btn:hover { background: #f1f5f9; }
+        .vote-btn.active-fire { background: var(--green-light); border-color: var(--green-border); color: var(--green-border); font-weight: bold; }
+        .vote-btn.active-quest { background: var(--yellow-light); border-color: var(--yellow-border); color: #b37e00; font-weight: bold; }
+
+        /* Проработка (Этап 3) */
+        .card-details { margin-top: 8px; font-size: 0.8rem; background: var(--bg); padding: 6px; border-radius: 6px; border: 1px solid var(--border-light); }
+        .card-details div { margin-bottom: 4px; color: var(--muted); }
+        .card-details strong { color: var(--text); }
+        .badge-horizon { display: inline-block; background: var(--purple-border); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-bottom: 6px; }
+
+        /* Скрытие карточек на этапе 3 (если мало голосов) */
+        .card.dimmed { opacity: 0.4; filter: grayscale(1); transform: scale(0.98); }
 
         /* ===== КНОПКИ ДОБАВЛЕНИЯ ===== */
-        .add-btn {
-            width: 100%; padding: 6px; font-size: 0.8rem; background: transparent; border: 1px dashed #c4c8cf;
-            border-radius: 8px; color: var(--muted); cursor: pointer; transition: background 0.15s; margin-top: 4px;
-        }
+        .add-btn { width: 100%; padding: 6px; font-size: 0.8rem; background: transparent; border: 1px dashed #c4c8cf; border-radius: 8px; color: var(--muted); cursor: pointer; transition: background 0.15s; margin-top: 4px; }
         .add-btn:hover { background: var(--primary-light); }
 
-        @media (max-width: 899px) {
-            main { gap: 10px; }
-            .zone { min-height: auto; }
-            .zone-header { position: sticky; top: 0; z-index: 5; }
-        }
-
-        /* ===== ТАЙМЕР ===== */
-        .timer-bar { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
-        .timer-bar input { width: 60px; padding: 4px 6px; border: 1px solid var(--border-light); border-radius: 6px; font-size: 0.85rem; }
-        .timer-bar button { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-light); background: white; cursor: pointer; font-size: 0.85rem; }
-        .timer-bar button.primary { background: var(--primary); color: white; border-color: var(--primary); }
+        @media (max-width: 899px) { main { gap: 10px; } .zone { min-height: auto; } }
 
         /* ===== МОДАЛЬНЫЕ ОКНА ===== */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; padding: 16px;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
         .modal-overlay.open { display: flex; }
-
-        .modal-content {
-            background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
-        }
-        .close-modal {
-            position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--muted);
-        }
-        .close-modal:hover { color: var(--text); }
-
+        .modal-content { background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--muted); }
         .modal-title { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 15px; }
         
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
-        .form-control {
-            width: 100%; padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 8px;
-            font-size: 0.9rem; font-family: inherit; outline: none;
-        }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; }
         .form-control:focus { border-color: var(--primary); }
         textarea.form-control { min-height: 80px; resize: vertical; }
-
-        .reactions-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
-        .reaction-option {
-            padding: 6px 12px; border: 1px solid var(--border-light); border-radius: 20px;
-            background: white; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 6px;
-        }
-        .reaction-option:hover { background: var(--bg); }
 
         .modal-actions { display: flex; gap: 10px; margin-top: 15px; }
         .modal-actions .btn { flex: 1; justify-content: center; }
 
-        /* ===== ИГРА ===== */
+        /* Игры */
         .tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border-light); padding-bottom: 8px; }
         .tab-btn { background: none; border: none; font-weight: 600; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; }
         .tab-btn.active { background: var(--primary-light); color: var(--primary); }
-        
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
         .game-area { height: 120px; border-radius: 12px; background: #e2e8f0; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: bold; cursor: pointer; user-select: none; margin-bottom: 12px; }
         .pain-card { background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent); }
         .pain-card strong { display: block; font-size: 0.9rem; margin-bottom: 4px; }
@@ -263,17 +139,33 @@
 <body>
 
 <header>
-    <h1>WS · неАвто продукты</h1>
-    <button id="openGameBtn" class="btn btn-purple">🎮 Разминка</button>
-    <button id="exportBtn" class="btn">📥 Экспорт</button>
-    <div class="timer-bar">
-        <span id="clock" style="font-variant-numeric: tabular-nums; font-weight: 600; min-width: 44px;">20:00</span>
-        <input type="number" id="mins" value="20" min="1" max="180">
-        <button id="startBtn" class="primary">Старт</button>
+    <div class="header-top">
+        <h1>WS · неАвто продукты</h1>
+        
+        <div class="stage-switcher">
+            <button class="stage-btn active" data-stage="1">1. Генерация</button>
+            <button class="stage-btn" data-stage="2">2. Голосование</button>
+            <button class="stage-btn" data-stage="3">3. Проработка</button>
+        </div>
+
+        <button id="openGameBtn" class="btn btn-purple">🎮 Разминка</button>
+        <button id="exportBtn" class="btn">📥 Экспорт</button>
+        
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; margin-left: auto;">
+            <span id="clock" style="font-variant-numeric: tabular-nums; font-weight: 600; min-width: 44px;">20:00</span>
+            <input type="number" id="mins" value="20" min="1" max="180" style="width: 60px; padding: 4px 6px; border: 1px solid var(--border-light); border-radius: 6px;">
+            <button id="startBtn" class="btn primary" style="background: var(--primary); color: white;">Старт</button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem;">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText" style="color: var(--muted);">подключение…</span>
+        </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem;">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText" style="color: var(--muted);">подключение…</span>
+    
+    <!-- Подсказка для каждого этапа -->
+    <div class="stage-hint" id="stageHint">
+        <div>💡</div>
+        <div id="hintText"><strong>Этап 1: Генерация</strong> Добавляйте идеи в нужные колонки. Не стесняйтесь, пишите всё, что приходит в голову.</div>
     </div>
 </header>
 
@@ -291,23 +183,34 @@
         </div>
 
         <div class="form-group">
-            <label>Ответственный (владелец)</label>
+            <label>Ответственный</label>
             <input type="text" class="form-control" id="editCardOwner" placeholder="Имя Фамилия">
         </div>
 
-        <div class="form-group">
-            <label>Реакции</label>
-            <div class="reactions-picker" id="reactionsPicker">
-                <button class="reaction-option" data-type="fire">🔥 <span id="cnt-fire">0</span></button>
-                <button class="reaction-option" data-type="idea">💡 <span id="cnt-idea">0</span></button>
-                <button class="reaction-option" data-type="question">❓ <span id="cnt-question">0</span></button>
-                <button class="reaction-option" data-type="support">🙌 <span id="cnt-support">0</span></button>
+        <!-- Поля только для 3 этапа -->
+        <div id="stage3Fields" style="display:none;">
+            <div class="form-group">
+                <label>Срок реализации (Горизонт)</label>
+                <select class="form-control" id="editCardHorizon">
+                    <option value="">Не выбран</option>
+                    <option value="H1">H1: Быстрые победы (0-3 мес)</option>
+                    <option value="H2">H2: Среднесрочные (3-6 мес)</option>
+                    <option value="H3">H3: Стратегия (6-12 мес)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Эффект (Что это даст бизнесу?)</label>
+                <textarea class="form-control" id="editCardEffect" style="min-height: 50px;" placeholder="Например: +15% к марже..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Work Package (Первый шаг)</label>
+                <input type="text" class="form-control" id="editCardWP" placeholder="Например: Созвон с IT">
             </div>
         </div>
 
         <div class="modal-actions">
             <button class="btn" id="deleteCardBtn" style="color: var(--red-border); border-color: var(--red-border);">Удалить</button>
-            <button class="btn" id="saveCardBtn" style="background: var(--primary); color: white; border-color: var(--primary);">Сохранить</button>
+            <button class="btn btn-primary" id="saveCardBtn">Сохранить</button>
         </div>
     </div>
 </div>
@@ -325,7 +228,7 @@
             <div class="game-area" id="gameArea">Нажми, чтобы начать</div>
             <div id="nameInputWrap" style="display:none; margin-bottom: 10px;">
                 <input type="text" class="form-control" id="playerName" placeholder="Ваше имя" style="margin-bottom: 6px;">
-                <button class="btn" id="saveResultBtn" style="width: 100%; background: var(--primary); color: white;">Сохранить</button>
+                <button class="btn btn-primary" id="saveResultBtn" style="width: 100%;">Сохранить</button>
             </div>
             <ul id="leaderboardList" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
         </div>
@@ -334,14 +237,13 @@
             <div style="background: var(--primary-light); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 600; color: var(--primary); font-size: 0.9rem;" id="painScenarioText"></div>
             <input type="text" class="form-control" id="painAuthor" placeholder="Ваше имя (необязательно)" style="margin-bottom: 6px;">
             <input type="text" class="form-control" id="painIdea" placeholder="Какое решение предложите?" style="margin-bottom: 6px;">
-            <button class="btn" id="addPainBtn" style="width: 100%; margin-bottom: 15px; background: var(--primary); color: white;">Предложить</button>
+            <button class="btn btn-primary" id="addPainBtn" style="width: 100%; margin-bottom: 15px;">Предложить</button>
             <div id="painsWall" style="max-height: 200px; overflow-y: auto;"></div>
         </div>
     </div>
 </div>
 
 <script type="module">
-    // 🔑 ВАШ firebaseConfig
     const firebaseConfig = {
         apiKey: "AIzaSyBfnEa8ResldcZ7wZ0USIKjLoke37oF_lk",
         authDomain: "ws-neavto-board.firebaseapp.com",
@@ -361,42 +263,34 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // ============================================================
-    //  КОНФИГУРАЦИЯ
-    // ============================================================
+    // КОНФИГУРАЦИЯ
     const ZONES = [
-        { id: "z1", title: "Поток 1 · Переработка", color: "#4a7dff", lanes: [{ id: "l1", title: "Продукты на переработку", hint: "Аудит существующих неавто-продуктов." }] },
+        { id: "z1", title: "Поток 1 · Переработка", color: "#4a7dff", lanes: [{ id: "l1", title: "Продукты на переработку", hint: "Аудит существующих продуктов." }] },
         { id: "z2", title: "Поток 2 · Новые", color: "#22a06b", lanes: [
-            { id: "l2a", title: "Коллабы", hint: "Комбинации продуктов с общим триггером." },
-            { id: "l2b", title: "Опции к каско", hint: "Дополнительные опции в флоу каско." },
-            { id: "l2c", title: "Кроссы к ОСАГО", hint: "Продукты в момент оформления ОСАГО." }
+            { id: "l2a", title: "Коллабы", hint: "Комбинации продуктов." },
+            { id: "l2b", title: "Опции к каско", hint: "Доп. опции." },
+            { id: "l2c", title: "Кроссы к ОСАГО", hint: "Продукты к ОСАГО." }
         ]},
-        { id: "z3", title: "Поток 3 · Процесс", color: "#e08a00", lanes: [
+        { id: "z3", title: "Поток 3 · Процессы", color: "#e08a00", lanes: [
             { id: "l3a", title: "Путь клиента", hint: "Service Blueprint." },
-            { id: "l3b", title: "Интеграция", hint: "FAST, ELT, фабрика." },
-            { id: "l3c", title: "Мультиполис", hint: "Упаковка продуктов." }
+            { id: "l3b", title: "Интеграция", hint: "FAST, ELT." },
+            { id: "l3c", title: "Мультиполис", hint: "Упаковка." }
         ]},
-        { id: "z4", title: "Парковка", color: "#a0a6b0", lanes: [{ id: "l4", title: "Вне целей", hint: "Идеи вне рамок." }] },
-        { id: "z5", title: "Pipeline", color: "#c0392b", lanes: [{ id: "l5", title: "Статусы", hint: "Сводная таблица." }] }
+        { id: "z4", title: "Парковка", color: "#a0a6b0", lanes: [{ id: "l4", title: "Вне целей", hint: "Идеи вне рамок." }] }
     ];
 
-    let state = { lanes: [], cards: [] };
+    let state = { lanes: [], cards: [], stage: 1 };
     let editingCardId = null;
-    let tempReactions = {}; // Для сохранения кликов по реакциям до нажатия "Сохранить"
 
     const boardRef = ref(db, "ws-board/current");
     const leaderboardRef = ref(db, "ws-board/leaderboard");
     const painsRef = ref(db, "ws-board/pains");
 
-    // ============================================================
-    //  ИНИЦИАЛИЗАЦИЯ
-    // ============================================================
+    // ИНИЦИАЛИЗАЦИЯ
     signInAnonymously(auth).catch(() => setStatus("ошибка", "offline"));
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            setStatus("онлайн", "online");
-            initListeners();
-        } else { setStatus("офлайн", "offline"); }
+        if (user) { setStatus("онлайн", "online"); initListeners(); } 
+        else { setStatus("офлайн", "offline"); }
     });
 
     function setStatus(text, cls) {
@@ -412,6 +306,7 @@
             if (data) {
                 state.lanes = data.lanes || [];
                 state.cards = data.cards || [];
+                state.stage = data.stage || 1;
             } else {
                 state.lanes = [];
                 ZONES.forEach(zone => {
@@ -420,8 +315,10 @@
                     });
                 });
                 state.cards = [];
+                state.stage = 1;
                 saveToFirebase();
             }
+            updateStageUI();
             render();
         });
         initLeaderboard();
@@ -429,12 +326,37 @@
     }
 
     function saveToFirebase() {
-        set(boardRef, { lanes: state.lanes, cards: state.cards }).catch(console.error);
+        set(boardRef, { lanes: state.lanes, cards: state.cards, stage: state.stage }).catch(console.error);
     }
 
-    // ============================================================
-    //  РЕНДЕР ДОСКИ
-    // ============================================================
+    // ПЕРЕКЛЮЧЕНИЕ ЭТАПОВ
+    document.querySelectorAll(".stage-btn").forEach(btn => {
+        btn.onclick = () => {
+            state.stage = parseInt(btn.dataset.stage);
+            saveToFirebase();
+            updateStageUI();
+            render();
+        };
+    });
+
+    function updateStageUI() {
+        // Кнопки
+        document.querySelectorAll(".stage-btn").forEach(btn => {
+            btn.classList.toggle("active", parseInt(btn.dataset.stage) === state.stage);
+        });
+
+        // Текст подсказки
+        const hintText = document.getElementById("hintText");
+        if (state.stage === 1) {
+            hintText.innerHTML = "<strong>Этап 1: Генерация</strong> Добавляйте идеи в нужные колонки. Не стесняйтесь, пишите всё, что приходит в голову.";
+        } else if (state.stage === 2) {
+            hintText.innerHTML = "<strong>Этап 2: Голосование</strong> Нажимайте 🔥 (надо делать) или ❓ (есть вопросы/непонятно), чтобы выбрать лучшие идеи. Считаются голоса всех участников.";
+        } else {
+            hintText.innerHTML = "<strong>Этап 3: Проработка</strong> Выберите лучшие идеи и кликните на них, чтобы заполнить Эффект, Первый шаг (WP) и Срок (H1-H3).";
+        }
+    }
+
+    // РЕНДЕР
     function render() {
         const board = document.getElementById("board");
         board.innerHTML = "";
@@ -442,8 +364,7 @@
         ZONES.forEach(zone => {
             const zoneEl = document.createElement("section");
             zoneEl.className = "zone";
-            zoneEl.style.setProperty("--c", zone.color);
-
+            
             const header = document.createElement("div");
             header.className = "zone-header";
             header.innerHTML = `<div class="dot" style="background: ${zone.color}"></div><div class="zone-title">${zone.title}</div>`;
@@ -453,20 +374,31 @@
             lanesContainer.className = "lanes-container";
 
             const zoneLanes = state.lanes.filter(l => l.zoneId === zone.id).sort((a, b) => a.order - b.order);
+            
+            // Для 3-го этапа: сортируем карточки по голосам (топ наверх)
+            if (state.stage === 3) {
+                zoneLanes.sort((a, b) => {
+                    const aVotes = state.cards.filter(c => c.laneId === a.id).reduce((sum, c) => sum + (c.fire || 0), 0);
+                    const bVotes = state.cards.filter(c => c.laneId === b.id).reduce((sum, c) => sum + (c.fire || 0), 0);
+                    return bVotes - aVotes;
+                });
+            }
+
             zoneLanes.forEach(lane => { lanesContainer.appendChild(renderLane(lane, zone)); });
 
-            const addLaneBtn = document.createElement("button");
-            addLaneBtn.className = "add-btn";
-            addLaneBtn.textContent = "+ тема";
-            addLaneBtn.onclick = () => {
-                const title = prompt("Название новой темы:", "Новая тема");
-                if (title) {
-                    state.lanes.push({ id: "lane_" + uid(), zoneId: zone.id, title, hint: "", order: state.lanes.filter(l => l.zoneId === zone.id).length });
-                    saveToFirebase(); render();
-                }
-            };
-
-            lanesContainer.appendChild(addLaneBtn);
+            if (state.stage !== 3) { // На 3 этапе новые темы не добавляем
+                const addLaneBtn = document.createElement("button");
+                addLaneBtn.className = "add-btn"; addLaneBtn.textContent = "+ тема";
+                addLaneBtn.onclick = () => {
+                    const title = prompt("Название новой темы:", "Новая тема");
+                    if (title) {
+                        state.lanes.push({ id: "lane_" + uid(), zoneId: zone.id, title, hint: "", order: state.lanes.filter(l => l.zoneId === zone.id).length });
+                        saveToFirebase(); render();
+                    }
+                };
+                lanesContainer.appendChild(addLaneBtn);
+            }
+            
             zoneEl.appendChild(lanesContainer);
             board.appendChild(zoneEl);
         });
@@ -478,64 +410,58 @@
         
         const laneHeader = document.createElement("div");
         laneHeader.className = "lane-header";
+        
+        // На 3 этапе убираем кнопку удаления темы
+        const deleteBtnHtml = state.stage !== 3 ? `<button class="lane-delete-btn" title="Удалить тему">✕</button>` : '';
+        
         laneHeader.innerHTML = `
             <div class="lane-title-wrap">
                 <span class="lane-title">${lane.title}</span>
                 ${lane.hint ? `<button class="lane-hint-btn">ℹ️</button>` : ''}
             </div>
-            <button class="lane-delete-btn" title="Удалить тему">✕</button>
+            ${deleteBtnHtml}
         `;
 
-        // Обработка удаления темы
-        laneHeader.querySelector(".lane-delete-btn").onclick = () => {
-            if (confirm(`Удалить тему "${lane.title}" и все карточки в ней?`)) {
-                state.lanes = state.lanes.filter(l => l.id !== lane.id);
-                state.cards = state.cards.filter(c => c.laneId !== lane.id);
-                saveToFirebase(); render();
-            }
-        };
+        const delBtn = laneHeader.querySelector(".lane-delete-btn");
+        if (delBtn) {
+            delBtn.onclick = () => {
+                if (confirm(`Удалить тему "${lane.title}" и все карточки?`)) {
+                    state.lanes = state.lanes.filter(l => l.id !== lane.id);
+                    state.cards = state.cards.filter(c => c.laneId !== lane.id);
+                    saveToFirebase(); render();
+                }
+            };
+        }
 
-        // Справка
         const hintBtn = laneHeader.querySelector(".lane-hint-btn");
         const hintEl = document.createElement("div");
         hintEl.className = "lane-hint";
         hintEl.textContent = lane.hint || "";
-        
         if (hintBtn) {
-            hintBtn.onclick = () => {
-                hintEl.classList.toggle("visible");
-            };
-            laneEl.appendChild(laneHeader);
-            laneEl.appendChild(hintEl);
+            hintBtn.onclick = () => hintEl.classList.toggle("visible");
+            laneEl.appendChild(laneHeader); laneEl.appendChild(hintEl);
         } else {
             laneEl.appendChild(laneHeader);
         }
 
-        // Карточки
-        const laneCards = state.cards.filter(c => c.laneId === lane.id).sort((a, b) => a.order - b.order);
+        // Сортировка карточек на этапе 3: по голосам (Огонь)
+        let laneCards = state.cards.filter(c => c.laneId === lane.id);
+        if (state.stage === 3) {
+            laneCards.sort((a, b) => (b.fire || 0) - (a.fire || 0));
+        } else {
+            laneCards.sort((a, b) => a.order - b.order);
+        }
+        
         laneCards.forEach(card => { laneEl.appendChild(renderCard(card, zone)); });
 
-        // Кнопка добавления карточки
-        const addCardBtn = document.createElement("button");
-        addCardBtn.className = "add-btn";
-        addCardBtn.textContent = "+ карточка";
-        addCardBtn.onclick = () => {
-            openEditModal({ id: "card_"+uid(), laneId: lane.id, text: "", owner: "", reactions: {} });
-        };
-        laneEl.appendChild(addCardBtn);
-
-        // Drag & Drop
-        laneEl.addEventListener("dragover", (e) => { e.preventDefault(); laneEl.classList.add("drag-over"); });
-        laneEl.addEventListener("dragleave", () => laneEl.classList.remove("drag-over"));
-        laneEl.addEventListener("drop", (e) => {
-            e.preventDefault(); laneEl.classList.remove("drag-over");
-            const cardId = e.dataTransfer.getData("text/plain");
-            const card = state.cards.find(c => c.id === cardId);
-            if (card && card.laneId !== lane.id) {
-                card.laneId = lane.id;
-                saveToFirebase(); render();
-            }
-        });
+        if (state.stage !== 3) { // На 3 этапе новые карточки не добавляем
+            const addCardBtn = document.createElement("button");
+            addCardBtn.className = "add-btn"; addCardBtn.textContent = "+ карточка";
+            addCardBtn.onclick = () => {
+                openEditModal({ id: "card_"+uid(), laneId: lane.id, text: "", owner: "", fire: 0, question: 0 });
+            };
+            laneEl.appendChild(addCardBtn);
+        }
 
         return laneEl;
     }
@@ -543,38 +469,65 @@
     function renderCard(card, zone) {
         const el = document.createElement("div");
         el.className = "card";
-        el.draggable = true;
-        el.style.borderLeftColor = zone.color;
+        el.style.borderLeftColor = zone.color || "#38056c";
         
-        const rx = card.reactions || {};
-        let rxHtml = "";
-        if (rx.fire > 0) rxHtml += `<span class="reaction-pill">🔥 ${rx.fire}</span>`;
-        if (rx.idea > 0) rxHtml += `<span class="reaction-pill">💡 ${rx.idea}</span>`;
-        if (rx.question > 0) rxHtml += `<span class="reaction-pill">❓ ${rx.question}</span>`;
-        if (rx.support > 0) rxHtml += `<span class="reaction-pill">🙌 ${rx.support}</span>`;
+        // Скрываем/приглушаем карточки на этапе 3, если у них мало огней (например, меньше 2) и не заполнен горизонт
+        if (state.stage === 3) {
+            if ((card.fire || 0) < 2 && !card.horizon && zone.id !== "z4") {
+                el.classList.add("dimmed");
+            }
+        }
 
-        el.innerHTML = `
-            <div class="card-text">${card.text || ''}</div>
-            <div class="card-footer">
-                <div class="card-reactions">${rxHtml}</div>
-                ${card.owner ? `<div class="card-owner">👤 ${card.owner}</div>` : ''}
-            </div>
-        `;
+        let contentHtml = `<div class="card-text">${card.text || ''}</div>`;
 
+        // Владелец (показываем всегда, если есть)
+        if (card.owner) {
+            contentHtml += `<div class="card-owner-badge">👤 ${card.owner}</div>`;
+        }
+
+        // Этап 2: Кнопки голосования прямо на карточке
+        if (state.stage === 2) {
+            contentHtml += `
+                <div class="vote-bar">
+                    <button class="vote-btn ${card.fire > 0 ? 'active-fire' : ''}" data-type="fire">🔥 ${card.fire || 0}</button>
+                    <button class="vote-btn ${card.question > 0 ? 'active-quest' : ''}" data-type="question">❓ ${card.question || 0}</button>
+                </div>
+            `;
+        }
+
+        // Этап 3: Бейджи проработки
+        if (state.stage === 3 && (card.horizon || card.effect || card.wp)) {
+            contentHtml += `<div class="card-details">`;
+            if (card.horizon) contentHtml += `<div class="badge-horizon">Срок: ${card.horizon}</div>`;
+            if (card.effect) contentHtml += `<div><strong>Эффект:</strong> ${card.effect}</div>`;
+            if (card.wp) contentHtml += `<div><strong>1-й шаг:</strong> ${card.wp}</div>`;
+            contentHtml += `</div>`;
+        }
+
+        el.innerHTML = contentHtml;
+
+        // Обработка кликов по кнопкам голосования (Этап 2)
+        if (state.stage === 2) {
+            el.querySelectorAll(".vote-btn").forEach(btn => {
+                btn.onclick = (e) => {
+                    e.stopPropagation(); // Чтобы не открылась модалка
+                    const type = btn.dataset.type;
+                    if (!card[type]) card[type] = 0;
+                    card[type]++;
+                    saveToFirebase(); 
+                    // Перерисовываем только эту карточку для скорости, но проще перерисовать всё
+                    render(); 
+                };
+            });
+        }
+
+        // Открытие модалки при клике на саму карточку
         el.onclick = () => openEditModal(card);
-
-        el.addEventListener("dragstart", (e) => {
-            e.dataTransfer.setData("text/plain", card.id);
-            el.classList.add("dragging");
-        });
-        el.addEventListener("dragend", () => el.classList.remove("dragging"));
 
         return el;
     }
 
-    // ============================================================
-    //  МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ
-    // ============================================================
+    // МОДАЛКА РЕДАКТИРОВАНИЯ
     const editModal = document.getElementById("editCardModal");
     
     function openEditModal(card) {
@@ -582,55 +535,44 @@
         document.getElementById("editCardText").value = card.text || "";
         document.getElementById("editCardOwner").value = card.owner || "";
         
-        // Копируем реакции во временный объект
-        tempReactions = Object.assign({fire:0, idea:0, question:0, support:0}, card.reactions || {});
-        updateReactionsUI();
+        // Поля 3 этапа
+        document.getElementById("editCardHorizon").value = card.horizon || "";
+        document.getElementById("editCardEffect").value = card.effect || "";
+        document.getElementById("editCardWP").value = card.wp || "";
         
+        // Показываем блок 3 этапа только если мы на нем
+        document.getElementById("stage3Fields").style.display = (state.stage === 3) ? "block" : "none";
+
         editModal.classList.add("open");
     }
 
     document.getElementById("closeEditModal").onclick = () => editModal.classList.remove("open");
 
-    // Клики по реакциям в модалке
-    document.querySelectorAll(".reaction-option").forEach(btn => {
-        btn.onclick = () => {
-            const type = btn.dataset.type;
-            if (tempReactions[type] > 0) {
-                tempReactions[type] = 0; // Снять реакцию
-            } else {
-                tempReactions[type] = 1; // Поставить реакцию
-            }
-            updateReactionsUI();
-        };
-    });
-
-    function updateReactionsUI() {
-        document.getElementById("cnt-fire").textContent = tempReactions.fire || 0;
-        document.getElementById("cnt-idea").textContent = tempReactions.idea || 0;
-        document.getElementById("cnt-question").textContent = tempReactions.question || 0;
-        document.getElementById("cnt-support").textContent = tempReactions.support || 0;
-    }
-
-    // Сохранение
     document.getElementById("saveCardBtn").onclick = () => {
         const text = document.getElementById("editCardText").value.trim();
         const owner = document.getElementById("editCardOwner").value.trim();
+        
+        const horizon = document.getElementById("editCardHorizon").value;
+        const effect = document.getElementById("editCardEffect").value.trim();
+        const wp = document.getElementById("editCardWP").value.trim();
 
         let card = state.cards.find(c => c.id === editingCardId);
         if (!card) {
-            // Если создаем новую, берем laneId из временного хранилища (передается при создании)
-            card = { id: editingCardId, laneId: editingCardId.split('_')[1] || "l1", text, owner, reactions: tempReactions, order: state.cards.length };
+            card = { id: editingCardId, laneId: editingCardId.split('_')[1] || "l1", text, owner, fire: 0, question: 0, order: state.cards.length };
             state.cards.push(card);
         } else {
-            card.text = text;
-            card.owner = owner;
-            card.reactions = tempReactions;
+            card.text = text; 
+            card.owner = owner; 
+            if (state.stage === 3) {
+                card.horizon = horizon;
+                card.effect = effect;
+                card.wp = wp;
+            }
         }
 
         saveToFirebase(); render(); editModal.classList.remove("open");
     };
 
-    // Удаление
     document.getElementById("deleteCardBtn").onclick = () => {
         if (confirm("Удалить карточку?")) {
             state.cards = state.cards.filter(c => c.id !== editingCardId);
@@ -638,31 +580,33 @@
         }
     };
 
-    // ============================================================
-    //  ЭКСПОРТ
-    // ============================================================
+    // ЭКСПОРТ
     document.getElementById("exportBtn").onclick = () => {
-        const rows = [['Поток', 'Тема', 'Текст', 'Ответственный', '🔥', '💡', '❓', '🙌']];
-        ZONES.forEach(zone => {
-            state.lanes.filter(l => l.zoneId === zone.id).forEach(lane => {
-                state.cards.filter(c => c.laneId === lane.id).forEach(card => {
-                    rows.push([
-                        zone.title, lane.title, card.text || '', card.owner || '',
-                        card.reactions?.fire || 0, card.reactions?.idea || 0,
-                        card.reactions?.question || 0, card.reactions?.support || 0
-                    ]);
-                });
-            });
+        const rows = [['Поток', 'Тема', 'Текст', 'Ответственный', '🔥 Огонь', '❓ Вопросы', 'Срок', 'Эффект', 'Первый шаг (WP)']];
+        
+        state.cards.forEach(card => {
+            const lane = state.lanes.find(l => l.id === card.laneId);
+            const zone = ZONES.find(z => z.id === lane?.zoneId);
+            rows.push([
+                zone?.title || '?', 
+                lane?.title || '?', 
+                card.text || '', 
+                card.owner || '',
+                card.fire || 0,
+                card.question || 0,
+                card.horizon || '',
+                card.effect || '',
+                card.wp || ''
+            ]);
         });
+
         const csv = '\ufeff' + rows.map(e => e.map(item => `"${String(item).replace(/"/g, '""')}"`).join(';')).join('\r\n');
         const link = document.createElement("a");
         link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
         link.download = "results.csv"; link.click();
     };
 
-    // ============================================================
-    //  РАЗМИНКА (без изменений)
-    // ============================================================
+    // ИГРЫ (ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ)
     const gameModal = document.getElementById("gameModal");
     document.getElementById("openGameBtn").onclick = () => {
         gameModal.classList.add("open");
@@ -753,9 +697,6 @@
         });
     }
 
-    // ============================================================
-    //  ТАЙМЕР
-    // ============================================================
     let timerId = null, remain = 20 * 60;
     document.getElementById("startBtn").onclick = () => {
         if (timerId) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; return; }
