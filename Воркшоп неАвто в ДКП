@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>WS · неАвто продукты · дилерский канал</title>
+    <style>
+        /* ===== ЦВЕТА И БАЗА (из вашего файла) ===== */
+        :root {
+            --primary: rgb(56, 5, 108);
+            --accent: rgb(121, 255, 58);
+            --primary-light: rgba(56, 5, 108, 0.05);
+            --border-light: #e0e4eb;
+            --green-light: rgba(0, 170, 80, 0.1);
+            --green-border: #00aa50;
+            --yellow-light: rgba(255, 180, 0, 0.1);
+            --yellow-border: #ffb400;
+            --red-light: rgba(220, 80, 80, 0.1);
+            --red-border: #dc5050;
+            --purple-light: rgba(100, 50, 180, 0.08);
+            --purple-border: rgb(120, 80, 200);
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #1f2a3a;
+            --muted: #5a6879;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            font-family: 'Arial', Helvetica, sans-serif;
+            color: var(--text);
+            padding: 8px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            body { padding: 16px; }
+        }
+
+        /* ===== ШАПКА ===== */
+        header {
+            background: white;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border-light);
+        }
+
+        header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            border-left: 4px solid var(--accent);
+            padding-left: 10px;
+            margin-right: auto;
+            line-height: 1.3;
+        }
+
+        @media (min-width: 600px) {
+            header h1 { font-size: 1.3rem; }
+        }
+
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #ccc;
+            display: inline-block;
+            margin-right: 4px;
+        }
+        .status-dot.online { background: var(--green-border); }
+        .status-dot.offline { background: var(--red-border); }
+
+        /* ===== ОСНОВНАЯ СЕТКА ПОТОКОВ ===== */
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        @media (min-width: 900px) {
+            main {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                align-items: start;
+            }
+        }
+
+        .zone {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            min-height: 200px;
+        }
+
+        .zone-header {
+            padding: 10px 12px;
+            background: var(--primary-light);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .zone-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            line-height: 1.3;
+        }
+
+        .zone-header .dot {
+            width: 10px; height: 10px; border-radius: 50%; flex: none;
+        }
+
+        .lanes-container {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        /* ===== ТЕМА (ДОРОЖКА) ===== */
+        .lane {
+            background: #f7f8fa;
+            border: 1px dashed #d3d7de;
+            border-radius: 10px;
+            padding: 8px;
+            min-height: 60px;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .lane.drag-over {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .lane-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .lane-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .lane-hint-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: var(--muted);
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .lane-hint-btn:hover {
+            background: #eef1f5;
+        }
+
+        .lane-hint {
+            font-size: 0.75rem;
+            color: var(--muted);
+            background: #eef1f5;
+            border-radius: 6px;
+            padding: 4px 8px;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            display: none;
+            word-break: break-word;
+        }
+        .lane-hint.visible { display: block; }
+
+        /* ===== КАРТОЧКА ===== */
+        .card {
+            background: white;
+            border: 1px solid #dcdfe5;
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 6px;
+            cursor: grab;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: box-shadow 0.15s;
+        }
+        .card:active { cursor: grabbing; }
+        .card.dragging { opacity: 0.4; }
+
+        .card .text {
+            outline: none;
+            min-height: 18px;
+            word-break: break-word;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .card .text:empty::before {
+            content: 'новая карточка…';
+            color: #a8aeb8;
+        }
+
+        .card .meta {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .card .owner {
+            flex: 1;
+            min-width: 60px;
+            font-size: 0.8rem;
+            border: 1px solid #e2e5ea;
+            border-radius: 4px;
+            padding: 2px 6px;
+            outline: none;
+        }
+
+        .reactions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .reaction-btn {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 14px;
+            border: 1px solid #d8dbe0;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transition: background 0.15s;
+        }
+        .reaction-btn:hover { background: #eef1f5; }
+        .reaction-btn.like.active { background: var(--green-light); border-color: var(--green-border); color: var(--green-border); }
+        .reaction-btn.dislike.active { background: var(--red-light); border-color: var(--red-border); color: var(--red-border); }
+
+        .card .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #a0a6b0;
+            font-size: 1rem;
+            padding: 0 4px;
+        }
+        .card .delete-btn:hover { color: var(--red-border); }
+
+        /* ===== КНОПКИ ДОБАВЛЕНИЯ ===== */
+        .add-btn {
+            width: 100%;
+            padding: 6px;
+            font-size: 0.8rem;
+            background: transparent;
+            border: 1px dashed #c4c8cf;
+            border-radius: 8px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 4px;
+        }
+        .add-btn:hover { background: var(--primary-light); }
+
+        /* ===== АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ===== */
+        @media (max-width: 899px) {
+            main { gap: 10px; }
+            .zone { min-height: auto; }
+            .zone-header { position: sticky; top: 0; z-index: 5; }
+        }
+
+        /* ===== ТАЙМЕР ===== */
+        .timer-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+        .timer-bar input {
+            width: 60px;
+            padding: 4px 6px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        .timer-bar button {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            background: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .timer-bar button.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>WS · неАвто продукты · дилерский канал</h1>
+    <div class="timer-bar">
+        <span id="clock" style="font-variant-numeric: tabular-nums; font-weight: 600; min-width: 44px;">20:00</span>
+        <input type="number" id="mins" value="20" min="1" max="180">
+        <button id="startBtn" class="primary">Старт</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem;">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText" style="color: var(--muted);">подключение…</span>
+    </div>
+</header>
+
+<main id="board"></main>
+
+<script type="module">
+    // ============================================================
+    //  🔑 ВАШ firebaseConfig
+    // ============================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBfnEa8ResldcZ7wZ0USIKjLoke37oF_lk",
+        authDomain: "ws-neavto-board.firebaseapp.com",
+        databaseURL: "https://ws-neavto-board-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "ws-neavto-board",
+        storageBucket: "ws-neavto-board.firebasestorage.app",
+        messagingSenderId: "1052851526436",
+        appId: "1:1052851526436:web:a610293dd7401d7a3e71b1",
+        measurementId: "G-CS9NVMV6RB"
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // ============================================================
+    //  КОНФИГУРАЦИЯ ДОСКИ
+    // ============================================================
+    const ZONES = [
+        {
+            id: "z1", title: "Поток 1 · Переработка существующих", color: "#4a7dff",
+            lanes: [
+                { id: "l1", title: "Продукты на переработку",
+                  hint: "Аудит существующих неавто-продуктов: что мешает продаже в дилерском канале и что можно изменить без запуска нового продукта." }
+            ]
+        },
+        {
+            id: "z2", title: "Поток 2 · Новые продукты", color: "#22a06b",
+            lanes: [
+                { id: "l2a", title: "Коллабы",
+                  hint: "Комбинации двух существующих продуктов с общим триггером: например, защита платежа + каско, помощь на дороге + ОСАГО." },
+                { id: "l2b", title: "Опции к каско",
+                  hint: "Дополнительные опции, которые оформляются в том же флоу, что и каско: что закрывают, как объяснить за 2 минуты, что нужно в FAST/ELT." },
+                { id: "l2c", title: "Кроссы к ОСАГО",
+                  hint: "Продукты, которые предлагаются в момент продления или оформления ОСАГО: триггер, где предлагаем, что нужно от систем." }
+            ]
+        },
+        {
+            id: "z3", title: "Поток 3 · Процесс продукта", color: "#e08a00",
+            lanes: [
+                { id: "l3a", title: "Путь клиента (CJM)",
+                  hint: "Service Blueprint: шаги клиента, действия дилера, front-stage (FAST), back-stage (ELT, фабрика), точки разрыва." },
+                { id: "l3b", title: "Готовность к интеграции",
+                  hint: "Integration Readiness: расчёт в FAST, оформление в FAST, передача в ELT, вывод на фабрику, что доработать, оценка усилий S/M/L." },
+                { id: "l3c", title: "Фабрика и мультиполис",
+                  hint: "Factory Fit Check + Multi-policy Canvas: шаблон на фабрике, параметры, срок вывода, блокеры, комбинации продуктов в мультиполис." }
+            ]
+        },
+        {
+            id: "z4", title: "Парковка", color: "#a0a6b0",
+            lanes: [
+                { id: "l4", title: "Вне целей",
+                  hint: "Идеи и вопросы, которые выходят за рамки трёх целей воркшопа. Разбираются после сессии." }
+            ]
+        },
+        {
+            id: "z5", title: "Pipeline Board", color: "#c0392b",
+            lanes: [
+                { id: "l5", title: "Go / Доработка / Пилот / Парковка",
+                  hint: "Сводная таблица: продукт, готовность FAST/ELT, готовность фабрики, мультиполис, статус, владелец, срок, метрика." }
+            ]
+        }
+    ];
+
+    // ============================================================
+    //  СОСТОЯНИЕ
+    // ============================================================
+    let state = {
+        lanes: [],
+        cards: []
+    };
+
+    const boardRef = ref(db, "ws-board/current");
+
+    // ============================================================
+    //  АУТЕНТИФИКАЦИЯ
+    // ============================================================
+    signInAnonymously(auth).catch((error) => {
+        console.error("Ошибка анонимного входа:", error);
+        setStatus("ошибка авторизации", "offline");
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            setStatus("онлайн", "online");
+            initRealtimeListener();
+        } else {
+            setStatus("офлайн", "offline");
+        }
+    });
+
+    // ============================================================
+    //  СИНХРОНИЗАЦИЯ В РЕАЛЬНОМ ВРЕМЕНИ
+    // ============================================================
+    function initRealtimeListener() {
+        onValue(boardRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                state.lanes = data.lanes || [];
+                state.cards = data.cards || [];
+            } else {
+                // Первый запуск: создаём базовые дорожки из ZONES
+                state.lanes = [];
+                ZONES.forEach(zone => {
+                    zone.lanes.forEach(lane => {
+                        state.lanes.push({
+                            id: lane.id,
+                            zoneId: zone.id,
+                            title: lane.title,
+                            hint: lane.hint || "",
+                            order: state.lanes.length
+                        });
+                    });
+                });
+                state.cards = [];
+                saveToFirebase();
+            }
+            render();
+        });
+    }
+
+    function saveToFirebase() {
+        set(boardRef, {
+            lanes: state.lanes,
+            cards: state.cards
+        }).catch((e) => console.error("Ошибка сохранения:", e));
+    }
+
+    function setStatus(text, cls) {
+        const dot = document.getElementById("statusDot");
+        const label = document.getElementById("statusText");
+        label.textContent = text;
+        dot.className = "status-dot " + (cls || "");
+    }
+
+    // ============================================================
+    //  ГЕНЕРАЦИЯ ID
+    // ============================================================
+    function uid() {
+        return Math.random().toString(36).slice(2, 10);
+    }
+
+    // ============================================================
+    //  РЕНДЕР
+    // ============================================================
+    function render() {
+        const board = document.getElementById("board");
+        board.innerHTML = "";
+
+        ZONES.forEach(zone => {
+            const zoneEl = document.createElement("section");
+            zoneEl.className = "zone";
+            zoneEl.style.setProperty("--c", zone.color);
+
+            // Заголовок зоны
+            const header = document.createElement("div");
+            header.className = "zone-header";
+            const dot = document.createElement("span");
+            dot.className = "dot";
+            dot.style.background = zone.color;
+            const title = document.createElement("div");
+            title.className = "zone-title";
+            title.textContent = zone.title;
+            header.append(dot, title);
+            zoneEl.appendChild(header);
+
+            const lanesContainer = document.createElement("div");
+            lanesContainer.className = "lanes-container";
+
+            // Дорожки этой зоны
+            const zoneLanes = state.lanes
+                .filter(l => l.zoneId === zone.id)
+                .sort((a, b) => a.order - b.order);
+
+            zoneLanes.forEach(lane => {
+                lanesContainer.appendChild(renderLane(lane, zone));
+            });
+
+            // Кнопка добавления темы (дорожки)
+            const addLaneBtn = document.createElement("button");
+            addLaneBtn.className = "add-btn";
+            addLaneBtn.textContent = "+ тема";
+            addLaneBtn.onclick = () => {
+                const newLane = {
+                    id: "lane_" + uid(),
+                    zoneId: zone.id,
+                    title: "Новая тема",
+                    hint: "",
+                    order: state.lanes.filter(l => l.zoneId === zone.id).length
+                };
+                state.lanes.push(newLane);
+                saveToFirebase();
+                render();
+                // Сразу даём переименовать
+                setTimeout(() => {
+                    const el = document.querySelector(`.lane[data-lane="${newLane.id}"] .lane-title`);
+                    if (el) {
+                        el.contentEditable = "true";
+                        el.focus();
+                    }
+                }, 100);
+            };
+
+            lanesContainer.appendChild(addLaneBtn);
+            zoneEl.appendChild(lanesContainer);
+            board.appendChild(zoneEl);
+        });
+    }
+
+    function renderLane(lane, zone) {
+        const laneEl = document.createElement("div");
+        laneEl.className = "lane";
+        laneEl.dataset.lane = lane.id;
+
+        // Заголовок темы
+        const laneHeader = document.createElement("div");
+        laneHeader.className = "lane-header";
+
+        const laneTitle = document.createElement("span");
+        laneTitle.className = "lane-title";
+        laneTitle.textContent = lane.title;
+        laneTitle.contentEditable = "true";
+        laneTitle.title = "Нажмите, чтобы переименовать";
+        laneTitle.addEventListener("blur", () => {
+            lane.title = laneTitle.textContent.trim();
+            saveToFirebase();
+        });
+        laneTitle.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); laneTitle.blur(); }
+        });
+
+        const hintBtn = document.createElement("button");
+        hintBtn.className = "lane-hint-btn";
+        hintBtn.textContent = "ℹ️ справка";
+        hintBtn.title = "Показать / скрыть справку по теме";
+
+        const hintEl = document.createElement("div");
+        hintEl.className = "lane-hint";
+        hintEl.contentEditable = "true";
+        hintEl.textContent = lane.hint || "";
+        hintEl.title = "Справку можно редактировать";
+        hintEl.addEventListener("blur", () => {
+            lane.hint = hintEl.textContent.trim();
+            saveToFirebase();
+        });
+
+        hintBtn.onclick = () => {
+            hintEl.classList.toggle("visible");
+            hintBtn.textContent = hintEl.classList.contains("visible") ? "✕ скрыть" : "ℹ️ справка";
+        };
+
+        laneHeader.append(laneTitle, hintBtn);
+        laneEl.appendChild(laneHeader);
+        laneEl.appendChild(hintEl);
+
+        // Карточки этой дорожки
+        const laneCards = state.cards
+            .filter(c => c.laneId === lane.id)
+            .sort((a, b) => a.order - b.order);
+
+        laneCards.forEach(card => {
+            laneEl.appendChild(renderCard(card));
+        });
+
+        // Кнопка добавления карточки
+        const addCardBtn = document.createElement("button");
+        addCardBtn.className = "add-btn";
+        addCardBtn.textContent = "+ карточка";
+        addCardBtn.onclick = () => {
+            const newCard = {
+                id: "card_" + uid(),
+                laneId: lane.id,
+                text: "",
+                owner: "",
+                likes: 0,
+                dislikes: 0,
+                order: state.cards.filter(c => c.laneId === lane.id).length
+            };
+            state.cards.push(newCard);
+            saveToFirebase();
+            render();
+            setTimeout(() => {
+                const el = document.querySelector(`.card[data-id="${newCard.id}"] .text`);
+                if (el) el.focus();
+            }, 100);
+        };
+        laneEl.appendChild(addCardBtn);
+
+        // Drag & drop
+        laneEl.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            laneEl.classList.add("drag-over");
+        });
+        laneEl.addEventListener("dragleave", () => {
+            laneEl.classList.remove("drag-over");
+        });
+        laneEl.addEventListener("drop", (e) => {
+            e.preventDefault();
+            laneEl.classList.remove("drag-over");
+            const cardId = e.dataTransfer.getData("text/plain");
+            const card = state.cards.find(c => c.id === cardId);
+            if (card && card.laneId !== lane.id) {
+                card.laneId = lane.id;
+                saveToFirebase();
+                render();
+            }
+        });
+
+        return laneEl;
+    }
+
+    function renderCard(card) {
+        const el = document.createElement("div");
+        el.className = "card";
+        el.dataset.id = card.id;
+        el.draggable = true;
+        el.style.borderLeftColor = getZoneColorByLane(card.laneId);
+
+        // Текст
+        const textEl = document.createElement("div");
+        textEl.className = "text";
+        textEl.contentEditable = "true";
+        textEl.textContent = card.text || "";
+        textEl.addEventListener("focus", () => { el.draggable = false; });
+        textEl.addEventListener("blur", () => {
+            card.text = textEl.textContent.trim();
+            el.draggable = true;
+            saveToFirebase();
+        });
+        textEl.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); textEl.blur(); }
+        });
+
+        // Мета: владелец, реакции, удаление
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const ownerInput = document.createElement("input");
+        ownerInput.className = "owner";
+        ownerInput.placeholder = "владелец";
+        ownerInput.value = card.owner || "";
+        ownerInput.addEventListener("input", () => {
+            card.owner = ownerInput.value;
+            saveToFirebase();
+        });
+
+        const reactions = document.createElement("div");
+        reactions.className = "reactions";
+
+        const likeBtn = document.createElement("button");
+        likeBtn.className = "reaction-btn like" + (card.likes > 0 ? " active" : "");
+        likeBtn.innerHTML = `👍 <span>${card.likes || 0}</span>`;
+        likeBtn.title = "Лайк";
+        likeBtn.onclick = (e) => {
+            e.stopPropagation();
+            card.likes = (card.likes || 0) + 1;
+            saveToFirebase();
+            render();
+        };
+
+        const dislikeBtn = document.createElement("button");
+        dislikeBtn.className = "reaction-btn dislike" + (card.dislikes > 0 ? " active" : "");
+        dislikeBtn.innerHTML = `👎 <span>${card.dislikes || 0}</span>`;
+        dislikeBtn.title = "Дизлайк";
+        dislikeBtn.onclick = (e) => {
+            e.stopPropagation();
+            card.dislikes = (card.dislikes || 0) + 1;
+            saveToFirebase();
+            render();
+        };
+
+        reactions.append(likeBtn, dislikeBtn);
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "delete-btn";
+        delBtn.textContent = "✕";
+        delBtn.title = "Удалить карточку";
+        delBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (!confirm("Удалить карточку?")) return;
+            state.cards = state.cards.filter(c => c.id !== card.id);
+            saveToFirebase();
+            render();
+        };
+
+        meta.append(ownerInput, reactions, delBtn);
+        el.append(textEl, meta);
+
+        // Drag start
+        el.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", card.id);
+            e.dataTransfer.effectAllowed = "move";
+            el.classList.add("dragging");
+        });
+        el.addEventListener("dragend", () => el.classList.remove("dragging"));
+
+        return el;
+    }
+
+    function getZoneColorByLane(laneId) {
+        const lane = state.lanes.find(l => l.id === laneId);
+        if (!lane) return "#4a7dff";
+        const zone = ZONES.find(z => z.id === lane.zoneId);
+        return zone ? zone.color : "#4a7dff";
+    }
+
+    // ============================================================
+    //  ТАЙМЕР
+    // ============================================================
+    let timerId = null;
+    let remain = 20 * 60;
+
+    function fmt(s) {
+        const m = Math.floor(s / 60), ss = s % 60;
+        return String(m).padStart(2, "0") + ":" + String(ss).padStart(2, "0");
+    }
+
+    function stopTimer() {
+        clearInterval(timerId);
+        timerId = null;
+        document.getElementById("startBtn").textContent = "Старт";
+    }
+
+    document.getElementById("startBtn").onclick = () => {
+        if (timerId) { stopTimer(); return; }
+        remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60;
+        document.getElementById("clock").textContent = fmt(remain);
+        document.getElementById("startBtn").textContent = "Стоп";
+        timerId = setInterval(() => {
+            remain--;
+            document.getElementById("clock").textContent = fmt(Math.max(0, remain));
+            if (remain <= 0) {
+                stopTimer();
+                document.getElementById("clock").textContent = "00:00";
+                alert("Время вышло");
+            }
+        }, 1000);
+    };
+
+    document.getElementById("mins").oninput = () => {
+        if (!timerId) {
+            remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60;
+            document.getElementById("clock").textContent = fmt(remain);
+        }
+    };
+</script>
+</body>
+</html>
