@@ -32,12 +32,10 @@
         header { background: white; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-light); }
         .header-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
         h1 { font-size: 1.1rem; font-weight: 600; color: var(--primary); border-left: 4px solid var(--accent); padding-left: 10px; margin-right: auto; line-height: 1.3; }
-        @media (min-width: 600px) { h1 { font-size: 1.3rem; } }
         
         .btn { padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-light); background: white; transition: background 0.15s; }
         .btn:hover { background: #eef1f5; }
         .btn-purple { background: var(--purple-light); color: var(--purple-border); border-color: var(--purple-border); }
-        .btn-purple:hover { background: rgba(120, 80, 200, 0.2); }
         .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
         .btn-primary:hover { background: #4a0a8a; }
 
@@ -83,8 +81,10 @@
         .card-text { font-size: 0.9rem; line-height: 1.4; word-break: break-word; }
         .card-text:empty::before { content: 'Нажмите, чтобы заполнить...'; color: #a8aeb8; }
 
-        /* Владелец */
-        .card-owner-badge { font-size: 0.75rem; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; }
+        /* Бейджи */
+        .card-owner-badge { font-size: 0.75rem; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; margin-right: 4px; }
+        .card-horizon-badge { font-size: 0.75rem; color: white; background: var(--purple-border); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; font-weight: bold; }
+        .card-brief-badge { font-size: 0.75rem; color: #b37e00; background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; }
 
         /* Голосование (Этап 2) */
         .vote-bar { display: flex; gap: 6px; margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px; }
@@ -93,13 +93,6 @@
         .vote-btn.active-fire { background: var(--green-light); border-color: var(--green-border); color: var(--green-border); font-weight: bold; }
         .vote-btn.active-quest { background: var(--yellow-light); border-color: var(--yellow-border); color: #b37e00; font-weight: bold; }
 
-        /* Проработка (Этап 3) */
-        .card-details { margin-top: 8px; font-size: 0.8rem; background: var(--bg); padding: 6px; border-radius: 6px; border: 1px solid var(--border-light); }
-        .card-details div { margin-bottom: 4px; color: var(--muted); }
-        .card-details strong { color: var(--text); }
-        .badge-horizon { display: inline-block; background: var(--purple-border); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-bottom: 6px; }
-
-        /* Скрытие карточек на этапе 3 (если мало голосов) */
         .card.dimmed { opacity: 0.4; filter: grayscale(1); transform: scale(0.98); }
 
         /* ===== КНОПКИ ДОБАВЛЕНИЯ ===== */
@@ -111,7 +104,7 @@
         /* ===== МОДАЛЬНЫЕ ОКНА ===== */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--muted); }
         .modal-title { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 15px; }
         
@@ -119,9 +112,14 @@
         .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
         .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; }
         .form-control:focus { border-color: var(--primary); }
-        textarea.form-control { min-height: 80px; resize: vertical; }
+        textarea.form-control { min-height: 60px; resize: vertical; }
 
-        .modal-actions { display: flex; gap: 10px; margin-top: 15px; }
+        /* Сетка для 8 полей брифа */
+        .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .brief-grid .form-group { margin-bottom: 0; }
+        .brief-grid .full-width { grid-column: 1 / -1; }
+
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
         .modal-actions .btn { flex: 1; justify-content: center; }
 
         /* Игры */
@@ -162,7 +160,6 @@
         </div>
     </div>
     
-    <!-- Подсказка для каждого этапа -->
     <div class="stage-hint" id="stageHint">
         <div>💡</div>
         <div id="hintText"><strong>Этап 1: Генерация</strong> Добавляйте идеи в нужные колонки. Не стесняйтесь, пишите всё, что приходит в голову.</div>
@@ -171,40 +168,77 @@
 
 <main id="board"></main>
 
-<!-- МОДАЛЬНОЕ ОКНО: РЕДАКТИРОВАНИЕ КАРТОЧКИ -->
+<!-- МОДАЛЬНОЕ ОКНО: РЕДАКТИРОВАНИЕ КАРТОЧКИ / БРИФ -->
 <div class="modal-overlay" id="editCardModal">
     <div class="modal-content">
         <div class="close-modal" id="closeEditModal">×</div>
-        <div class="modal-title">Карточка</div>
+        <div class="modal-title" id="modalTitle">Карточка</div>
         
         <div class="form-group">
-            <label>Текст идеи</label>
-            <textarea class="form-control" id="editCardText" placeholder="Опишите суть..."></textarea>
+            <label>Суть идеи (Название)</label>
+            <textarea class="form-control" id="editCardText" placeholder="Опишите суть..." style="min-height: 50px;"></textarea>
         </div>
 
-        <div class="form-group">
-            <label>Ответственный</label>
-            <input type="text" class="form-control" id="editCardOwner" placeholder="Имя Фамилия">
-        </div>
-
-        <!-- Поля только для 3 этапа -->
-        <div id="stage3Fields" style="display:none;">
+        <div class="brief-grid">
             <div class="form-group">
-                <label>Срок реализации (Горизонт)</label>
+                <label>Ответственный</label>
+                <input type="text" class="form-control" id="editCardOwner" placeholder="Имя">
+            </div>
+            <div class="form-group">
+                <label>Срок (Горизонт)</label>
                 <select class="form-control" id="editCardHorizon">
                     <option value="">Не выбран</option>
-                    <option value="H1">H1: Быстрые победы (0-3 мес)</option>
-                    <option value="H2">H2: Среднесрочные (3-6 мес)</option>
-                    <option value="H3">H3: Стратегия (6-12 мес)</option>
+                    <option value="H1">H1: 0-3 мес</option>
+                    <option value="H2">H2: 3-6 мес</option>
+                    <option value="H3">H3: 6-12 мес</option>
                 </select>
             </div>
+        </div>
+
+        <!-- Блок 8 параметров (только для 3 этапа) -->
+        <div id="stage3Fields" style="display:none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+            <div style="font-size: 0.9rem; font-weight: bold; color: var(--primary); margin-bottom: 10px;">📋 Маркетинговый бриф</div>
+            
             <div class="form-group">
-                <label>Эффект (Что это даст бизнесу?)</label>
-                <textarea class="form-control" id="editCardEffect" style="min-height: 50px;" placeholder="Например: +15% к марже..."></textarea>
+                <label>1. Бизнес-цель (Чего хотите достичь?)</label>
+                <textarea class="form-control" id="fBizGoal" placeholder="Например: +10 млн к выручке..."></textarea>
             </div>
+            
+            <div class="brief-grid">
+                <div class="form-group">
+                    <label>2. Целевой рынок</label>
+                    <input type="text" class="form-control" id="fTargetMarket" placeholder="Индустрия, сегмент">
+                </div>
+                <div class="form-group">
+                    <label>3. Целевые клиенты</label>
+                    <input type="text" class="form-control" id="fTargetClients" placeholder="Возраст, боли">
+                </div>
+            </div>
+
             <div class="form-group">
-                <label>Work Package (Первый шаг)</label>
-                <input type="text" class="form-control" id="editCardWP" placeholder="Например: Созвон с IT">
+                <label>4. Уникальное ценностное предложение (УТП)</label>
+                <textarea class="form-control" id="fUVP" placeholder="Почему купят у нас?"></textarea>
+            </div>
+
+            <div class="brief-grid">
+                <div class="form-group">
+                    <label>5. Каналы</label>
+                    <input type="text" class="form-control" id="fChannels" placeholder="Дилер, сайт...">
+                </div>
+                <div class="form-group">
+                    <label>6. Стратегия</label>
+                    <input type="text" class="form-control" id="fStrategy" placeholder="Как завлекаем?">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>7. Ключевые метрики</label>
+                <input type="text" class="form-control" id="fMetrics" placeholder="Как измерим успех?">
+            </div>
+
+            <div class="form-group">
+                <label>8. Факторы успеха</label>
+                <textarea class="form-control" id="fSuccessFactors" placeholder="Что критически важно?"></textarea>
             </div>
         </div>
 
@@ -215,7 +249,7 @@
     </div>
 </div>
 
-<!-- МОДАЛЬНОЕ ОКНО: РАЗМИНКА -->
+<!-- МОДАЛЬНОЕ ОКНО: РАЗМИНКА (без изменений) -->
 <div class="modal-overlay" id="gameModal">
     <div class="modal-content">
         <div class="close-modal" id="closeGameBtn">×</div>
@@ -223,7 +257,6 @@
             <button class="tab-btn active" data-tab="tabReaction">⚡ Реакция</button>
             <button class="tab-btn" data-tab="tabPains">💡 Боли клиента</button>
         </div>
-
         <div id="tabReaction" class="tab-content active">
             <div class="game-area" id="gameArea">Нажми, чтобы начать</div>
             <div id="nameInputWrap" style="display:none; margin-bottom: 10px;">
@@ -232,7 +265,6 @@
             </div>
             <ul id="leaderboardList" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
         </div>
-
         <div id="tabPains" class="tab-content">
             <div style="background: var(--primary-light); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 600; color: var(--primary); font-size: 0.9rem;" id="painScenarioText"></div>
             <input type="text" class="form-control" id="painAuthor" placeholder="Ваше имя (необязательно)" style="margin-bottom: 6px;">
@@ -340,19 +372,17 @@
     });
 
     function updateStageUI() {
-        // Кнопки
         document.querySelectorAll(".stage-btn").forEach(btn => {
             btn.classList.toggle("active", parseInt(btn.dataset.stage) === state.stage);
         });
 
-        // Текст подсказки
         const hintText = document.getElementById("hintText");
         if (state.stage === 1) {
             hintText.innerHTML = "<strong>Этап 1: Генерация</strong> Добавляйте идеи в нужные колонки. Не стесняйтесь, пишите всё, что приходит в голову.";
         } else if (state.stage === 2) {
-            hintText.innerHTML = "<strong>Этап 2: Голосование</strong> Нажимайте 🔥 (надо делать) или ❓ (есть вопросы/непонятно), чтобы выбрать лучшие идеи. Считаются голоса всех участников.";
+            hintText.innerHTML = "<strong>Этап 2: Голосование</strong> Нажимайте 🔥 (надо делать) или ❓ (есть вопросы), чтобы выбрать лучшие идеи.";
         } else {
-            hintText.innerHTML = "<strong>Этап 3: Проработка</strong> Выберите лучшие идеи и кликните на них, чтобы заполнить Эффект, Первый шаг (WP) и Срок (H1-H3).";
+            hintText.innerHTML = "<strong>Этап 3: Проработка</strong> Выберите лучшие идеи и кликните на них, чтобы заполнить маркетинговый бриф (8 параметров).";
         }
     }
 
@@ -375,18 +405,9 @@
 
             const zoneLanes = state.lanes.filter(l => l.zoneId === zone.id).sort((a, b) => a.order - b.order);
             
-            // Для 3-го этапа: сортируем карточки по голосам (топ наверх)
-            if (state.stage === 3) {
-                zoneLanes.sort((a, b) => {
-                    const aVotes = state.cards.filter(c => c.laneId === a.id).reduce((sum, c) => sum + (c.fire || 0), 0);
-                    const bVotes = state.cards.filter(c => c.laneId === b.id).reduce((sum, c) => sum + (c.fire || 0), 0);
-                    return bVotes - aVotes;
-                });
-            }
-
             zoneLanes.forEach(lane => { lanesContainer.appendChild(renderLane(lane, zone)); });
 
-            if (state.stage !== 3) { // На 3 этапе новые темы не добавляем
+            if (state.stage !== 3) {
                 const addLaneBtn = document.createElement("button");
                 addLaneBtn.className = "add-btn"; addLaneBtn.textContent = "+ тема";
                 addLaneBtn.onclick = () => {
@@ -410,8 +431,6 @@
         
         const laneHeader = document.createElement("div");
         laneHeader.className = "lane-header";
-        
-        // На 3 этапе убираем кнопку удаления темы
         const deleteBtnHtml = state.stage !== 3 ? `<button class="lane-delete-btn" title="Удалить тему">✕</button>` : '';
         
         laneHeader.innerHTML = `
@@ -444,7 +463,6 @@
             laneEl.appendChild(laneHeader);
         }
 
-        // Сортировка карточек на этапе 3: по голосам (Огонь)
         let laneCards = state.cards.filter(c => c.laneId === lane.id);
         if (state.stage === 3) {
             laneCards.sort((a, b) => (b.fire || 0) - (a.fire || 0));
@@ -454,7 +472,7 @@
         
         laneCards.forEach(card => { laneEl.appendChild(renderCard(card, zone)); });
 
-        if (state.stage !== 3) { // На 3 этапе новые карточки не добавляем
+        if (state.stage !== 3) {
             const addCardBtn = document.createElement("button");
             addCardBtn.className = "add-btn"; addCardBtn.textContent = "+ карточка";
             addCardBtn.onclick = () => {
@@ -471,7 +489,6 @@
         el.className = "card";
         el.style.borderLeftColor = zone.color || "#38056c";
         
-        // Скрываем/приглушаем карточки на этапе 3, если у них мало огней (например, меньше 2) и не заполнен горизонт
         if (state.stage === 3) {
             if ((card.fire || 0) < 2 && !card.horizon && zone.id !== "z4") {
                 el.classList.add("dimmed");
@@ -480,12 +497,17 @@
 
         let contentHtml = `<div class="card-text">${card.text || ''}</div>`;
 
-        // Владелец (показываем всегда, если есть)
-        if (card.owner) {
+        if (state.stage === 3) {
+            // Краткая выжимка на карточке
+            let badges = "";
+            if (card.owner) badges += `<span class="card-owner-badge">👤 ${card.owner}</span>`;
+            if (card.horizon) badges += `<span class="card-horizon-badge">${card.horizon}</span>`;
+            if (card.uvp) badges += `<span class="card-brief-badge">📋 Бриф заполнен</span>`;
+            contentHtml += `<div style="margin-top:6px;">${badges}</div>`;
+        } else if (card.owner) {
             contentHtml += `<div class="card-owner-badge">👤 ${card.owner}</div>`;
         }
 
-        // Этап 2: Кнопки голосования прямо на карточке
         if (state.stage === 2) {
             contentHtml += `
                 <div class="vote-bar">
@@ -495,53 +517,45 @@
             `;
         }
 
-        // Этап 3: Бейджи проработки
-        if (state.stage === 3 && (card.horizon || card.effect || card.wp)) {
-            contentHtml += `<div class="card-details">`;
-            if (card.horizon) contentHtml += `<div class="badge-horizon">Срок: ${card.horizon}</div>`;
-            if (card.effect) contentHtml += `<div><strong>Эффект:</strong> ${card.effect}</div>`;
-            if (card.wp) contentHtml += `<div><strong>1-й шаг:</strong> ${card.wp}</div>`;
-            contentHtml += `</div>`;
-        }
-
         el.innerHTML = contentHtml;
 
-        // Обработка кликов по кнопкам голосования (Этап 2)
         if (state.stage === 2) {
             el.querySelectorAll(".vote-btn").forEach(btn => {
                 btn.onclick = (e) => {
-                    e.stopPropagation(); // Чтобы не открылась модалка
+                    e.stopPropagation();
                     const type = btn.dataset.type;
                     if (!card[type]) card[type] = 0;
                     card[type]++;
-                    saveToFirebase(); 
-                    // Перерисовываем только эту карточку для скорости, но проще перерисовать всё
-                    render(); 
+                    saveToFirebase(); render(); 
                 };
             });
         }
 
-        // Открытие модалки при клике на саму карточку
         el.onclick = () => openEditModal(card);
-
         return el;
     }
 
-    // МОДАЛКА РЕДАКТИРОВАНИЯ
+    // МОДАЛКА РЕДАКТИРОВАНИЯ (БРИФ)
     const editModal = document.getElementById("editCardModal");
     
     function openEditModal(card) {
         editingCardId = card.id;
         document.getElementById("editCardText").value = card.text || "";
         document.getElementById("editCardOwner").value = card.owner || "";
-        
-        // Поля 3 этапа
         document.getElementById("editCardHorizon").value = card.horizon || "";
-        document.getElementById("editCardEffect").value = card.effect || "";
-        document.getElementById("editCardWP").value = card.wp || "";
         
-        // Показываем блок 3 этапа только если мы на нем
+        // Заполнение 8 полей брифа
+        document.getElementById("fBizGoal").value = card.bizGoal || "";
+        document.getElementById("fTargetMarket").value = card.targetMarket || "";
+        document.getElementById("fTargetClients").value = card.targetClients || "";
+        document.getElementById("fUVP").value = card.uvp || "";
+        document.getElementById("fChannels").value = card.channels || "";
+        document.getElementById("fStrategy").value = card.strategy || "";
+        document.getElementById("fMetrics").value = card.metrics || "";
+        document.getElementById("fSuccessFactors").value = card.successFactors || "";
+        
         document.getElementById("stage3Fields").style.display = (state.stage === 3) ? "block" : "none";
+        document.getElementById("modalTitle").textContent = (state.stage === 3) ? "Проработка идеи" : "Карточка идеи";
 
         editModal.classList.add("open");
     }
@@ -551,22 +565,26 @@
     document.getElementById("saveCardBtn").onclick = () => {
         const text = document.getElementById("editCardText").value.trim();
         const owner = document.getElementById("editCardOwner").value.trim();
-        
         const horizon = document.getElementById("editCardHorizon").value;
-        const effect = document.getElementById("editCardEffect").value.trim();
-        const wp = document.getElementById("editCardWP").value.trim();
-
+        
         let card = state.cards.find(c => c.id === editingCardId);
         if (!card) {
-            card = { id: editingCardId, laneId: editingCardId.split('_')[1] || "l1", text, owner, fire: 0, question: 0, order: state.cards.length };
+            card = { id: editingCardId, laneId: editingCardId.split('_')[1] || "l1", text, owner, horizon, fire: 0, question: 0, order: state.cards.length };
             state.cards.push(card);
         } else {
             card.text = text; 
             card.owner = owner; 
+            card.horizon = horizon;
+            
             if (state.stage === 3) {
-                card.horizon = horizon;
-                card.effect = effect;
-                card.wp = wp;
+                card.bizGoal = document.getElementById("fBizGoal").value.trim();
+                card.targetMarket = document.getElementById("fTargetMarket").value.trim();
+                card.targetClients = document.getElementById("fTargetClients").value.trim();
+                card.uvp = document.getElementById("fUVP").value.trim();
+                card.channels = document.getElementById("fChannels").value.trim();
+                card.strategy = document.getElementById("fStrategy").value.trim();
+                card.metrics = document.getElementById("fMetrics").value.trim();
+                card.successFactors = document.getElementById("fSuccessFactors").value.trim();
             }
         }
 
@@ -582,31 +600,28 @@
 
     // ЭКСПОРТ
     document.getElementById("exportBtn").onclick = () => {
-        const rows = [['Поток', 'Тема', 'Текст', 'Ответственный', '🔥 Огонь', '❓ Вопросы', 'Срок', 'Эффект', 'Первый шаг (WP)']];
+        const headers = ['Поток', 'Тема', 'Идея', 'Ответственный', '🔥', '❓', 'Срок', '1.Цель', '2.Рынок', '3.Клиенты', '4.УТП', '5.Каналы', '6.Стратегия', '7.Метрики', '8.Факторы успеха'];
+        const rows = [headers];
         
         state.cards.forEach(card => {
             const lane = state.lanes.find(l => l.id === card.laneId);
             const zone = ZONES.find(z => z.id === lane?.zoneId);
             rows.push([
-                zone?.title || '?', 
-                lane?.title || '?', 
-                card.text || '', 
-                card.owner || '',
-                card.fire || 0,
-                card.question || 0,
-                card.horizon || '',
-                card.effect || '',
-                card.wp || ''
+                zone?.title || '?', lane?.title || '?', card.text || '', card.owner || '',
+                card.fire || 0, card.question || 0, card.horizon || '',
+                card.bizGoal || '', card.targetMarket || '', card.targetClients || '',
+                card.uvp || '', card.channels || '', card.strategy || '',
+                card.metrics || '', card.successFactors || ''
             ]);
         });
 
         const csv = '\ufeff' + rows.map(e => e.map(item => `"${String(item).replace(/"/g, '""')}"`).join(';')).join('\r\n');
         const link = document.createElement("a");
         link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-        link.download = "results.csv"; link.click();
+        link.download = "results_full_brief.csv"; link.click();
     };
 
-    // ИГРЫ (ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ)
+    // ИГРЫ (БЕЗ ИЗМЕНЕНИЙ)
     const gameModal = document.getElementById("gameModal");
     document.getElementById("openGameBtn").onclick = () => {
         gameModal.classList.add("open");
@@ -614,7 +629,6 @@
         document.getElementById("painScenarioText").textContent = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
     };
     document.getElementById("closeGameBtn").onclick = () => gameModal.classList.remove("open");
-
     document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -623,92 +637,25 @@
             document.getElementById(btn.dataset.tab).classList.add("active");
         };
     });
-
     const gameArea = document.getElementById("gameArea");
     const nameInputWrap = document.getElementById("nameInputWrap");
     let gameTimeout = null, gameStartTime = 0, currentTime = 0, gameState = 'idle';
-
-    function resetReactionGame() {
-        clearTimeout(gameTimeout); gameState = 'idle';
-        gameArea.style.background = "#e2e8f0"; gameArea.textContent = "Нажми, чтобы начать";
-        nameInputWrap.style.display = "none";
-    }
-
+    function resetReactionGame() { clearTimeout(gameTimeout); gameState = 'idle'; gameArea.style.background = "#e2e8f0"; gameArea.textContent = "Нажми, чтобы начать"; nameInputWrap.style.display = "none"; }
     gameArea.onclick = () => {
         if (gameState === 'idle' || gameState === 'finished') {
-            gameState = 'waiting';
-            gameArea.style.background = "var(--red-border)"; gameArea.style.color = "white";
-            gameArea.textContent = "Ждите...";
-            nameInputWrap.style.display = "none";
-            gameTimeout = setTimeout(() => {
-                gameState = 'ready'; gameArea.style.background = "var(--green-border)"; gameArea.textContent = "ЖМИ!";
-                gameStartTime = Date.now();
-            }, Math.random() * 2000 + 1500);
-        } else if (gameState === 'waiting') {
-            clearTimeout(gameTimeout); resetReactionGame(); gameArea.textContent = "Рано!";
-        } else if (gameState === 'ready') {
-            gameState = 'finished';
-            currentTime = Date.now() - gameStartTime;
-            gameArea.style.background = "var(--primary-light)"; gameArea.style.color = "var(--primary)";
-            gameArea.textContent = `${currentTime} мс`;
-            nameInputWrap.style.display = "block";
-        }
+            gameState = 'waiting'; gameArea.style.background = "var(--red-border)"; gameArea.style.color = "white"; gameArea.textContent = "Ждите..."; nameInputWrap.style.display = "none";
+            gameTimeout = setTimeout(() => { gameState = 'ready'; gameArea.style.background = "var(--green-border)"; gameArea.textContent = "ЖМИ!"; gameStartTime = Date.now(); }, Math.random() * 2000 + 1500);
+        } else if (gameState === 'waiting') { clearTimeout(gameTimeout); resetReactionGame(); gameArea.textContent = "Рано!"; } 
+        else if (gameState === 'ready') { gameState = 'finished'; currentTime = Date.now() - gameStartTime; gameArea.style.background = "var(--primary-light)"; gameArea.style.color = "var(--primary)"; gameArea.textContent = `${currentTime} мс`; nameInputWrap.style.display = "block"; }
     };
-
-    document.getElementById("saveResultBtn").onclick = () => {
-        const name = document.getElementById("playerName").value.trim() || "Аноним";
-        set(push(leaderboardRef), { name, time: currentTime }).then(() => nameInputWrap.style.display = "none");
-    };
-
-    function initLeaderboard() {
-        onValue(leaderboardRef, (snap) => {
-            const data = snap.val(); const list = document.getElementById("leaderboardList");
-            list.innerHTML = "";
-            if (!data) return;
-            Object.values(data).sort((a,b) => a.time - b.time).slice(0, 5).forEach((r, i) => {
-                list.innerHTML += `<li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #eee;"><span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':''} ${r.name}</span> <strong>${r.time} мс</strong></li>`;
-            });
-        });
-    }
-
-    const SCENARIOS = [
-        "Клиент купил машину в кредит и боится потерять работу.",
-        "Клиент только что переехал в новую квартиру и делает ремонт.",
-        "Клиент купил щенка для ребенка и не знает, что с ним делать.",
-        "Клиент планирует провести все лето на даче.",
-        "Клиент открыл небольшой бизнес (кофейню)."
-    ];
-
-    document.getElementById("addPainBtn").onclick = () => {
-        const author = document.getElementById("painAuthor").value.trim() || "Аноним";
-        const idea = document.getElementById("painIdea").value.trim();
-        if (!idea) return;
-        set(push(painsRef), { author, idea }).then(() => document.getElementById("painIdea").value = "");
-    };
-
-    function initPains() {
-        onValue(painsRef, (snap) => {
-            const data = snap.val(); const wall = document.getElementById("painsWall");
-            wall.innerHTML = "";
-            if (!data) return;
-            Object.values(data).reverse().forEach(item => {
-                wall.innerHTML += `<div class="pain-card"><strong>${item.idea}</strong><span>Предложил: ${item.author}</span></div>`;
-            });
-        });
-    }
+    document.getElementById("saveResultBtn").onclick = () => { const name = document.getElementById("playerName").value.trim() || "Аноним"; set(push(leaderboardRef), { name, time: currentTime }).then(() => nameInputWrap.style.display = "none"); };
+    function initLeaderboard() { onValue(leaderboardRef, (snap) => { const data = snap.val(); const list = document.getElementById("leaderboardList"); list.innerHTML = ""; if (!data) return; Object.values(data).sort((a,b) => a.time - b.time).slice(0, 5).forEach((r, i) => { list.innerHTML += `<li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #eee;"><span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':''} ${r.name}</span> <strong>${r.time} мс</strong></li>`; }); }); }
+    const SCENARIOS = ["Клиент купил машину в кредит и боится потерять работу.","Клиент только что переехал в новую квартиру и делает ремонт.","Клиент купил щенка для ребенка и не знает, что с ним делать.","Клиент планирует провести все лето на даче.","Клиент открыл небольшой бизнес (кофейню)."];
+    document.getElementById("addPainBtn").onclick = () => { const author = document.getElementById("painAuthor").value.trim() || "Аноним"; const idea = document.getElementById("painIdea").value.trim(); if (!idea) return; set(push(painsRef), { author, idea }).then(() => document.getElementById("painIdea").value = ""); };
+    function initPains() { onValue(painsRef, (snap) => { const data = snap.val(); const wall = document.getElementById("painsWall"); wall.innerHTML = ""; if (!data) return; Object.values(data).reverse().forEach(item => { wall.innerHTML += `<div class="pain-card"><strong>${item.idea}</strong><span>Предложил: ${item.author}</span></div>`; }); }); }
 
     let timerId = null, remain = 20 * 60;
-    document.getElementById("startBtn").onclick = () => {
-        if (timerId) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; return; }
-        remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60;
-        document.getElementById("startBtn").textContent = "Стоп";
-        timerId = setInterval(() => {
-            remain--;
-            const m = Math.floor(remain / 60), s = remain % 60;
-            document.getElementById("clock").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-            if (remain <= 0) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; alert("Время вышло"); }
-        }, 1000);
-    };
+    document.getElementById("startBtn").onclick = () => { if (timerId) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; return; } remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60; document.getElementById("startBtn").textContent = "Стоп"; timerId = setInterval(() => { remain--; const m = Math.floor(remain / 60), s = remain % 60; document.getElementById("clock").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; if (remain <= 0) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; alert("Время вышло"); } }, 1000); };
 </script>
 </body>
 </html>
