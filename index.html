@@ -249,7 +249,7 @@
     </div>
 </div>
 
-<!-- МОДАЛЬНОЕ ОКНО: РАЗМИНКА (без изменений) -->
+<!-- МОДАЛЬНОЕ ОКНО: РАЗМИНКА -->
 <div class="modal-overlay" id="gameModal">
     <div class="modal-content">
         <div class="close-modal" id="closeGameBtn">×</div>
@@ -295,7 +295,6 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // КОНФИГУРАЦИЯ
     const ZONES = [
         { id: "z1", title: "Поток 1 · Переработка", color: "#4a7dff", lanes: [{ id: "l1", title: "Продукты на переработку", hint: "Аудит существующих продуктов." }] },
         { id: "z2", title: "Поток 2 · Новые", color: "#22a06b", lanes: [
@@ -313,12 +312,12 @@
 
     let state = { lanes: [], cards: [], stage: 1 };
     let editingCardId = null;
+    let tempCardLaneId = null; // Исправление: запоминаем колонку для новой карточки
 
     const boardRef = ref(db, "ws-board/current");
     const leaderboardRef = ref(db, "ws-board/leaderboard");
     const painsRef = ref(db, "ws-board/pains");
 
-    // ИНИЦИАЛИЗАЦИЯ
     signInAnonymously(auth).catch(() => setStatus("ошибка", "offline"));
     onAuthStateChanged(auth, (user) => {
         if (user) { setStatus("онлайн", "online"); initListeners(); } 
@@ -361,7 +360,6 @@
         set(boardRef, { lanes: state.lanes, cards: state.cards, stage: state.stage }).catch(console.error);
     }
 
-    // ПЕРЕКЛЮЧЕНИЕ ЭТАПОВ
     document.querySelectorAll(".stage-btn").forEach(btn => {
         btn.onclick = () => {
             state.stage = parseInt(btn.dataset.stage);
@@ -386,7 +384,6 @@
         }
     }
 
-    // РЕНДЕР
     function render() {
         const board = document.getElementById("board");
         board.innerHTML = "";
@@ -404,7 +401,6 @@
             lanesContainer.className = "lanes-container";
 
             const zoneLanes = state.lanes.filter(l => l.zoneId === zone.id).sort((a, b) => a.order - b.order);
-            
             zoneLanes.forEach(lane => { lanesContainer.appendChild(renderLane(lane, zone)); });
 
             if (state.stage !== 3) {
@@ -498,7 +494,6 @@
         let contentHtml = `<div class="card-text">${card.text || ''}</div>`;
 
         if (state.stage === 3) {
-            // Краткая выжимка на карточке
             let badges = "";
             if (card.owner) badges += `<span class="card-owner-badge">👤 ${card.owner}</span>`;
             if (card.horizon) badges += `<span class="card-horizon-badge">${card.horizon}</span>`;
@@ -535,16 +530,16 @@
         return el;
     }
 
-    // МОДАЛКА РЕДАКТИРОВАНИЯ (БРИФ)
     const editModal = document.getElementById("editCardModal");
     
     function openEditModal(card) {
         editingCardId = card.id;
+        tempCardLaneId = card.laneId; // Запоминаем ID колонки!
+        
         document.getElementById("editCardText").value = card.text || "";
         document.getElementById("editCardOwner").value = card.owner || "";
         document.getElementById("editCardHorizon").value = card.horizon || "";
         
-        // Заполнение 8 полей брифа
         document.getElementById("fBizGoal").value = card.bizGoal || "";
         document.getElementById("fTargetMarket").value = card.targetMarket || "";
         document.getElementById("fTargetClients").value = card.targetClients || "";
@@ -569,7 +564,8 @@
         
         let card = state.cards.find(c => c.id === editingCardId);
         if (!card) {
-            card = { id: editingCardId, laneId: editingCardId.split('_')[1] || "l1", text, owner, horizon, fire: 0, question: 0, order: state.cards.length };
+            // Исправление: используем tempCardLaneId вместо извлечения из строки ID
+            card = { id: editingCardId, laneId: tempCardLaneId, text, owner, horizon, fire: 0, question: 0, order: state.cards.length };
             state.cards.push(card);
         } else {
             card.text = text; 
@@ -598,7 +594,6 @@
         }
     };
 
-    // ЭКСПОРТ
     document.getElementById("exportBtn").onclick = () => {
         const headers = ['Поток', 'Тема', 'Идея', 'Ответственный', '🔥', '❓', 'Срок', '1.Цель', '2.Рынок', '3.Клиенты', '4.УТП', '5.Каналы', '6.Стратегия', '7.Метрики', '8.Факторы успеха'];
         const rows = [headers];
@@ -621,39 +616,19 @@
         link.download = "results_full_brief.csv"; link.click();
     };
 
-    // ИГРЫ (БЕЗ ИЗМЕНЕНИЙ)
+    // Игры
     const gameModal = document.getElementById("gameModal");
-    document.getElementById("openGameBtn").onclick = () => {
-        gameModal.classList.add("open");
-        resetReactionGame();
-        document.getElementById("painScenarioText").textContent = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
-    };
+    document.getElementById("openGameBtn").onclick = () => { gameModal.classList.add("open"); resetReactionGame(); document.getElementById("painScenarioText").textContent = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)]; };
     document.getElementById("closeGameBtn").onclick = () => gameModal.classList.remove("open");
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-            btn.classList.add("active");
-            document.getElementById(btn.dataset.tab).classList.add("active");
-        };
-    });
-    const gameArea = document.getElementById("gameArea");
-    const nameInputWrap = document.getElementById("nameInputWrap");
-    let gameTimeout = null, gameStartTime = 0, currentTime = 0, gameState = 'idle';
+    document.querySelectorAll(".tab-btn").forEach(btn => { btn.onclick = () => { document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active")); btn.classList.add("active"); document.getElementById(btn.dataset.tab).classList.add("active"); }; });
+    const gameArea = document.getElementById("gameArea"); const nameInputWrap = document.getElementById("nameInputWrap"); let gameTimeout = null, gameStartTime = 0, currentTime = 0, gameState = 'idle';
     function resetReactionGame() { clearTimeout(gameTimeout); gameState = 'idle'; gameArea.style.background = "#e2e8f0"; gameArea.textContent = "Нажми, чтобы начать"; nameInputWrap.style.display = "none"; }
-    gameArea.onclick = () => {
-        if (gameState === 'idle' || gameState === 'finished') {
-            gameState = 'waiting'; gameArea.style.background = "var(--red-border)"; gameArea.style.color = "white"; gameArea.textContent = "Ждите..."; nameInputWrap.style.display = "none";
-            gameTimeout = setTimeout(() => { gameState = 'ready'; gameArea.style.background = "var(--green-border)"; gameArea.textContent = "ЖМИ!"; gameStartTime = Date.now(); }, Math.random() * 2000 + 1500);
-        } else if (gameState === 'waiting') { clearTimeout(gameTimeout); resetReactionGame(); gameArea.textContent = "Рано!"; } 
-        else if (gameState === 'ready') { gameState = 'finished'; currentTime = Date.now() - gameStartTime; gameArea.style.background = "var(--primary-light)"; gameArea.style.color = "var(--primary)"; gameArea.textContent = `${currentTime} мс`; nameInputWrap.style.display = "block"; }
-    };
+    gameArea.onclick = () => { if (gameState === 'idle' || gameState === 'finished') { gameState = 'waiting'; gameArea.style.background = "var(--red-border)"; gameArea.style.color = "white"; gameArea.textContent = "Ждите..."; nameInputWrap.style.display = "none"; gameTimeout = setTimeout(() => { gameState = 'ready'; gameArea.style.background = "var(--green-border)"; gameArea.textContent = "ЖМИ!"; gameStartTime = Date.now(); }, Math.random() * 2000 + 1500); } else if (gameState === 'waiting') { clearTimeout(gameTimeout); resetReactionGame(); gameArea.textContent = "Рано!"; } else if (gameState === 'ready') { gameState = 'finished'; currentTime = Date.now() - gameStartTime; gameArea.style.background = "var(--primary-light)"; gameArea.style.color = "var(--primary)"; gameArea.textContent = `${currentTime} мс`; nameInputWrap.style.display = "block"; } };
     document.getElementById("saveResultBtn").onclick = () => { const name = document.getElementById("playerName").value.trim() || "Аноним"; set(push(leaderboardRef), { name, time: currentTime }).then(() => nameInputWrap.style.display = "none"); };
     function initLeaderboard() { onValue(leaderboardRef, (snap) => { const data = snap.val(); const list = document.getElementById("leaderboardList"); list.innerHTML = ""; if (!data) return; Object.values(data).sort((a,b) => a.time - b.time).slice(0, 5).forEach((r, i) => { list.innerHTML += `<li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #eee;"><span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':''} ${r.name}</span> <strong>${r.time} мс</strong></li>`; }); }); }
     const SCENARIOS = ["Клиент купил машину в кредит и боится потерять работу.","Клиент только что переехал в новую квартиру и делает ремонт.","Клиент купил щенка для ребенка и не знает, что с ним делать.","Клиент планирует провести все лето на даче.","Клиент открыл небольшой бизнес (кофейню)."];
     document.getElementById("addPainBtn").onclick = () => { const author = document.getElementById("painAuthor").value.trim() || "Аноним"; const idea = document.getElementById("painIdea").value.trim(); if (!idea) return; set(push(painsRef), { author, idea }).then(() => document.getElementById("painIdea").value = ""); };
     function initPains() { onValue(painsRef, (snap) => { const data = snap.val(); const wall = document.getElementById("painsWall"); wall.innerHTML = ""; if (!data) return; Object.values(data).reverse().forEach(item => { wall.innerHTML += `<div class="pain-card"><strong>${item.idea}</strong><span>Предложил: ${item.author}</span></div>`; }); }); }
-
     let timerId = null, remain = 20 * 60;
     document.getElementById("startBtn").onclick = () => { if (timerId) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; return; } remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60; document.getElementById("startBtn").textContent = "Стоп"; timerId = setInterval(() => { remain--; const m = Math.floor(remain / 60), s = remain % 60; document.getElementById("clock").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; if (remain <= 0) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; alert("Время вышло"); } }, 1000); };
 </script>
