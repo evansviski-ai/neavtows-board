@@ -65,18 +65,20 @@
 
         @media (min-width: 600px) { header h1 { font-size: 1.3rem; } }
 
-        .game-btn {
-            background: var(--purple-light);
-            color: var(--purple-border);
-            border: 1px solid var(--purple-border);
+        .game-btn, .export-btn {
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
+            border: 1px solid;
         }
+        .game-btn { background: var(--purple-light); color: var(--purple-border); border-color: var(--purple-border); }
         .game-btn:hover { background: rgba(120, 80, 200, 0.2); }
+        
+        .export-btn { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+        .export-btn:hover { background: rgba(56, 5, 108, 0.1); }
 
         .status-dot {
             width: 8px; height: 8px; border-radius: 50%;
@@ -213,7 +215,7 @@
         .timer-bar button { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-light); background: white; cursor: pointer; font-size: 0.85rem; }
         .timer-bar button.primary { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* ===== МОДАЛЬНОЕ ОКНО ИГРЫ ===== */
+        /* ===== МОДАЛЬНОЕ ОКНО ===== */
         #gameModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px;
@@ -221,39 +223,62 @@
         #gameModal.open { display: flex; }
         
         .game-content {
-            background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px;
+            background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 500px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
-            display: flex; flex-direction: column; gap: 15px;
+            display: flex; flex-direction: column; gap: 15px; max-height: 90vh;
         }
         .close-modal {
             position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--muted);
         }
         .close-modal:hover { color: var(--text); }
         
-        .game-title { font-size: 1.2rem; font-weight: bold; color: var(--primary); text-align: center; }
-        
+        /* Вкладки */
+        .tabs { display: flex; gap: 10px; border-bottom: 2px solid var(--border-light); padding-bottom: 10px; margin-bottom: 10px; }
+        .tab-btn {
+            background: none; border: none; font-size: 0.95rem; font-weight: bold; color: var(--muted);
+            cursor: pointer; padding: 5px 10px; border-radius: 6px; transition: background 0.2s;
+        }
+        .tab-btn:hover { background: var(--primary-light); }
+        .tab-btn.active { color: var(--primary); background: var(--primary-light); }
+
+        .tab-content { display: none; flex-direction: column; gap: 15px; overflow-y: auto; }
+        .tab-content.active { display: flex; }
+
+        /* Стили для "Реакции" */
         .game-area {
             height: 150px; border-radius: 12px; background: #eef1f5; display: flex; justify-content: center; align-items: center;
             font-size: 1.5rem; font-weight: bold; color: var(--text); cursor: pointer; transition: background 0.1s; user-select: none;
         }
-        
-        .leaderboard {
-            background: var(--primary-light); border-radius: 8px; padding: 10px;
-        }
+        .leaderboard { background: var(--primary-light); border-radius: 8px; padding: 10px; }
         .leaderboard h4 { font-size: 0.9rem; margin-bottom: 8px; color: var(--primary); text-align: center; }
         .leaderboard ul { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; }
         .leaderboard li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-light); }
-        .leaderboard li:last-child { border-bottom: none; }
         
-        .name-input {
-            width: 100%; padding: 10px; border: 1px solid var(--border-light); border-radius: 8px;
-            font-size: 0.9rem; display: none;
+        /* Стили для "Боли клиента" */
+        .pain-scenario {
+            background: var(--yellow-light); border: 1px solid var(--yellow-border); color: #5a4600;
+            padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 1.05rem; line-height: 1.4;
         }
+        .pain-input-group { display: flex; gap: 8px; flex-direction: column; }
+        .pain-input-group input {
+            padding: 10px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.9rem; outline: none;
+        }
+        .pain-input-group button {
+            padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px;
+            font-weight: bold; cursor: pointer; transition: opacity 0.2s;
+        }
+        .pain-input-group button:hover { opacity: 0.9; }
+        
+        .pains-wall { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
+        .pain-card {
+            background: white; border: 1px solid var(--border-light); border-left: 4px solid var(--green-border);
+            padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .pain-card .author { font-size: 0.75rem; color: var(--muted); margin-top: 4px; display: block; }
+
+        .name-input { display: none; width: 100%; padding: 10px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.9rem; }
         .name-input.visible { display: block; }
-        .save-btn {
-            width: 100%; padding: 10px; background: var(--primary); color: white; border: none;
-            border-radius: 8px; font-size: 0.9rem; cursor: pointer; display: none;
-        }
+        .save-btn { display: none; width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 0.9rem; cursor: pointer; }
         .save-btn.visible { display: block; }
     </style>
 </head>
@@ -262,8 +287,8 @@
 <header>
     <h1>WS · неАвто продукты · дилерский канал</h1>
     
-    <!-- Кнопка открытия игры -->
     <button id="openGameBtn" class="game-btn">🎮 Разминка</button>
+    <button id="exportBtn" class="export-btn">📥 Экспорт</button>
 
     <div class="timer-bar">
         <span id="clock" style="font-variant-numeric: tabular-nums; font-weight: 600; min-width: 44px;">20:00</span>
@@ -278,25 +303,50 @@
 
 <main id="board"></main>
 
-<!-- Модальное окно игры -->
+<!-- Модальное окно разминки -->
 <div id="gameModal">
     <div class="game-content">
         <span class="close-modal" id="closeGameBtn">×</span>
-        <div class="game-title">Тест на реакцию</div>
         
-        <div class="game-area" id="gameArea">Нажми, чтобы начать</div>
-        
-        <div>
-            <input type="text" id="playerName" class="name-input" placeholder="Твое имя для лидерборда">
-            <button id="saveResultBtn" class="save-btn">Сохранить результат</button>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tabReaction">⚡ Реакция</button>
+            <button class="tab-btn" data-tab="tabPains">💡 Боли клиента</button>
         </div>
 
-        <div class="leaderboard">
-            <h4>🏆 Топ-5 участников</h4>
-            <ul id="leaderboardList">
-                <li style="justify-content: center; color: var(--muted);">Загрузка...</li>
-            </ul>
+        <!-- ВКЛАДКА 1: РЕАКЦИЯ -->
+        <div id="tabReaction" class="tab-content active">
+            <div class="game-area" id="gameArea">Нажми, чтобы начать</div>
+            
+            <div>
+                <input type="text" id="playerName" class="name-input" placeholder="Твое имя для лидерборда">
+                <button id="saveResultBtn" class="save-btn">Сохранить результат</button>
+            </div>
+
+            <div class="leaderboard">
+                <h4>🏆 Топ-5 участников</h4>
+                <ul id="leaderboardList">
+                    <li style="justify-content: center; color: var(--muted);">Загрузка...</li>
+                </ul>
+            </div>
         </div>
+
+        <!-- ВКЛАДКА 2: БОЛИ КЛИЕНТА -->
+        <div id="tabPains" class="tab-content">
+            <div class="pain-scenario" id="painScenarioText">
+                Загрузка сценария...
+            </div>
+            
+            <div class="pain-input-group">
+                <input type="text" id="painAuthorInput" placeholder="Твое имя (необязательно)">
+                <input type="text" id="painIdeaInput" placeholder="Какой неавто-продукт решит эту боль?">
+                <button id="addPainBtn">Предложить решение</button>
+            </div>
+
+            <div class="pains-wall" id="painsWall">
+                <!-- Идеи будут появляться здесь -->
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -325,46 +375,31 @@
     //  КОНФИГУРАЦИЯ ДОСКИ
     // ============================================================
     const ZONES = [
-        {
-            id: "z1", title: "Поток 1 · Переработка существующих", color: "#4a7dff",
-            lanes: [{ id: "l1", title: "Продукты на переработку", hint: "Аудит существующих неавто-продуктов: что мешает продаже в дилерском канале и что можно изменить без запуска нового продукта." }]
-        },
-        {
-            id: "z2", title: "Поток 2 · Новые продукты", color: "#22a06b",
-            lanes: [
-                { id: "l2a", title: "Коллабы", hint: "Комбинации двух существующих продуктов с общим триггером: например, защита платежа + каско, помощь на дороге + ОСАГО." },
-                { id: "l2b", title: "Опции к каско", hint: "Дополнительные опции, которые оформляются в том же флоу, что и каско: что закрывают, как объяснить за 2 минуты, что нужно в FAST/ELT." },
-                { id: "l2c", title: "Кроссы к ОСАГО", hint: "Продукты, которые предлагаются в момент продления или оформления ОСАГО: триггер, где предлагаем, что нужно от систем." }
-            ]
-        },
-        {
-            id: "z3", title: "Поток 3 · Процесс продукта", color: "#e08a00",
-            lanes: [
-                { id: "l3a", title: "Путь клиента (CJM)", hint: "Service Blueprint: шаги клиента, действия дилера, front-stage (FAST), back-stage (ELT, фабрика), точки разрыва." },
-                { id: "l3b", title: "Готовность к интеграции", hint: "Integration Readiness: расчёт в FAST, оформление в FAST, передача в ELT, вывод на фабрику, что доработать, оценка усилий S/M/L." },
-                { id: "l3c", title: "Фабрика и мультиполис", hint: "Factory Fit Check + Multi-policy Canvas: шаблон на фабрике, параметры, срок вывода, блокеры, комбинации продуктов в мультиполис." }
-            ]
-        },
-        {
-            id: "z4", title: "Парковка", color: "#a0a6b0",
-            lanes: [{ id: "l4", title: "Вне целей", hint: "Идеи и вопросы, которые выходят за рамки трёх целей воркшопа. Разбираются после сессии." }]
-        },
-        {
-            id: "z5", title: "Pipeline Board", color: "#c0392b",
-            lanes: [{ id: "l5", title: "Go / Доработка / Пилот / Парковка", hint: "Сводная таблица: продукт, готовность FAST/ELT, готовность фабрики, мультиполис, статус, владелец, срок, метрика." }]
-        }
+        { id: "z1", title: "Поток 1 · Переработка", color: "#4a7dff", lanes: [{ id: "l1", title: "Продукты на переработку", hint: "Аудит существующих неавто-продуктов." }] },
+        { id: "z2", title: "Поток 2 · Новые продукты", color: "#22a06b", lanes: [
+            { id: "l2a", title: "Коллабы", hint: "Комбинации продуктов с общим триггером." },
+            { id: "l2b", title: "Опции к каско", hint: "Дополнительные опции в флоу каско." },
+            { id: "l2c", title: "Кроссы к ОСАГО", hint: "Продукты в момент оформления ОСАГО." }
+        ]},
+        { id: "z3", title: "Поток 3 · Процесс", color: "#e08a00", lanes: [
+            { id: "l3a", title: "Путь клиента (CJM)", hint: "Service Blueprint." },
+            { id: "l3b", title: "Готовность к интеграции", hint: "Integration Readiness." },
+            { id: "l3c", title: "Фабрика и мультиполис", hint: "Factory Fit Check." }
+        ]},
+        { id: "z4", title: "Парковка", color: "#a0a6b0", lanes: [{ id: "l4", title: "Вне целей", hint: "Идеи вне рамок." }] },
+        { id: "z5", title: "Pipeline Board", color: "#c0392b", lanes: [{ id: "l5", title: "Статусы", hint: "Сводная таблица." }] }
     ];
 
     let state = { lanes: [], cards: [] };
     const boardRef = ref(db, "ws-board/current");
     const leaderboardRef = ref(db, "ws-board/leaderboard");
+    const painsRef = ref(db, "ws-board/pains_ideas");
 
     // ============================================================
     //  АУТЕНТИФИКАЦИЯ
     // ============================================================
     signInAnonymously(auth).catch((error) => {
-        console.error("Ошибка анонимного входа:", error);
-        setStatus("ошибка авторизации", "offline");
+        setStatus("ошибка", "offline");
     });
 
     onAuthStateChanged(auth, (user) => {
@@ -372,16 +407,15 @@
             setStatus("онлайн", "online");
             initRealtimeListener();
             initLeaderboardListener();
+            initPainsListener();
         } else {
             setStatus("офлайн", "offline");
         }
     });
 
     function setStatus(text, cls) {
-        const dot = document.getElementById("statusDot");
-        const label = document.getElementById("statusText");
-        label.textContent = text;
-        dot.className = "status-dot " + (cls || "");
+        document.getElementById("statusText").textContent = text;
+        document.getElementById("statusDot").className = "status-dot " + (cls || "");
     }
 
     // ============================================================
@@ -408,7 +442,7 @@
     }
 
     function saveToFirebase() {
-        set(boardRef, { lanes: state.lanes, cards: state.cards }).catch((e) => console.error("Ошибка сохранения:", e));
+        set(boardRef, { lanes: state.lanes, cards: state.cards }).catch((e) => console.error(e));
     }
 
     function uid() { return Math.random().toString(36).slice(2, 10); }
@@ -428,11 +462,9 @@
             const header = document.createElement("div");
             header.className = "zone-header";
             const dot = document.createElement("span");
-            dot.className = "dot";
-            dot.style.background = zone.color;
+            dot.className = "dot"; dot.style.background = zone.color;
             const title = document.createElement("div");
-            title.className = "zone-title";
-            title.textContent = zone.title;
+            title.className = "zone-title"; title.textContent = zone.title;
             header.append(dot, title);
             zoneEl.appendChild(header);
 
@@ -448,12 +480,7 @@
             addLaneBtn.onclick = () => {
                 const newLane = { id: "lane_" + uid(), zoneId: zone.id, title: "Новая тема", hint: "", order: state.lanes.filter(l => l.zoneId === zone.id).length };
                 state.lanes.push(newLane);
-                saveToFirebase();
-                render();
-                setTimeout(() => {
-                    const el = document.querySelector(`.lane[data-lane="${newLane.id}"] .lane-title`);
-                    if (el) { el.contentEditable = "true"; el.focus(); }
-                }, 100);
+                saveToFirebase(); render();
             };
 
             lanesContainer.appendChild(addLaneBtn);
@@ -465,27 +492,20 @@
     function renderLane(lane, zone) {
         const laneEl = document.createElement("div");
         laneEl.className = "lane";
-        laneEl.dataset.lane = lane.id;
-
+        
         const laneHeader = document.createElement("div");
         laneHeader.className = "lane-header";
 
         const laneTitle = document.createElement("span");
-        laneTitle.className = "lane-title";
-        laneTitle.textContent = lane.title;
+        laneTitle.className = "lane-title"; laneTitle.textContent = lane.title;
         laneTitle.contentEditable = "true";
-        laneTitle.title = "Нажмите, чтобы переименовать";
         laneTitle.addEventListener("blur", () => { lane.title = laneTitle.textContent.trim(); saveToFirebase(); });
-        laneTitle.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); laneTitle.blur(); } });
 
         const hintBtn = document.createElement("button");
-        hintBtn.className = "lane-hint-btn";
-        hintBtn.textContent = "ℹ️ справка";
+        hintBtn.className = "lane-hint-btn"; hintBtn.textContent = "ℹ️ справка";
 
         const hintEl = document.createElement("div");
-        hintEl.className = "lane-hint";
-        hintEl.contentEditable = "true";
-        hintEl.textContent = lane.hint || "";
+        hintEl.className = "lane-hint"; hintEl.contentEditable = "true"; hintEl.textContent = lane.hint || "";
         hintEl.addEventListener("blur", () => { lane.hint = hintEl.textContent.trim(); saveToFirebase(); });
 
         hintBtn.onclick = () => {
@@ -494,62 +514,46 @@
         };
 
         laneHeader.append(laneTitle, hintBtn);
-        laneEl.appendChild(laneHeader);
-        laneEl.appendChild(hintEl);
+        laneEl.appendChild(laneHeader); laneEl.appendChild(hintEl);
 
         const laneCards = state.cards.filter(c => c.laneId === lane.id).sort((a, b) => a.order - b.order);
         laneCards.forEach(card => { laneEl.appendChild(renderCard(card)); });
 
         const addCardBtn = document.createElement("button");
-        addCardBtn.className = "add-btn";
-        addCardBtn.textContent = "+ карточка";
+        addCardBtn.className = "add-btn"; addCardBtn.textContent = "+ карточка";
         addCardBtn.onclick = () => {
             const newCard = { id: "card_" + uid(), laneId: lane.id, text: "", owner: "", likes: 0, dislikes: 0, order: state.cards.filter(c => c.laneId === lane.id).length };
             state.cards.push(newCard);
-            saveToFirebase();
-            render();
-            setTimeout(() => {
-                const el = document.querySelector(`.card[data-id="${newCard.id}"] .text`);
-                if (el) el.focus();
-            }, 100);
+            saveToFirebase(); render();
         };
         laneEl.appendChild(addCardBtn);
 
-        laneEl.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; laneEl.classList.add("drag-over"); });
+        laneEl.addEventListener("dragover", (e) => { e.preventDefault(); laneEl.classList.add("drag-over"); });
         laneEl.addEventListener("dragleave", () => { laneEl.classList.remove("drag-over"); });
         laneEl.addEventListener("drop", (e) => {
-            e.preventDefault();
-            laneEl.classList.remove("drag-over");
+            e.preventDefault(); laneEl.classList.remove("drag-over");
             const cardId = e.dataTransfer.getData("text/plain");
             const card = state.cards.find(c => c.id === cardId);
             if (card && card.laneId !== lane.id) { card.laneId = lane.id; saveToFirebase(); render(); }
         });
-
         return laneEl;
     }
 
     function renderCard(card) {
         const el = document.createElement("div");
-        el.className = "card";
-        el.dataset.id = card.id;
-        el.draggable = true;
+        el.className = "card"; el.dataset.id = card.id; el.draggable = true;
         el.style.borderLeftColor = getZoneColorByLane(card.laneId);
 
         const textEl = document.createElement("div");
-        textEl.className = "text";
-        textEl.contentEditable = "true";
-        textEl.textContent = card.text || "";
+        textEl.className = "text"; textEl.contentEditable = "true"; textEl.textContent = card.text || "";
         textEl.addEventListener("focus", () => { el.draggable = false; });
         textEl.addEventListener("blur", () => { card.text = textEl.textContent.trim(); el.draggable = true; saveToFirebase(); });
-        textEl.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); textEl.blur(); } });
 
         const meta = document.createElement("div");
         meta.className = "meta";
 
         const ownerInput = document.createElement("input");
-        ownerInput.className = "owner";
-        ownerInput.placeholder = "владелец";
-        ownerInput.value = card.owner || "";
+        ownerInput.className = "owner"; ownerInput.placeholder = "владелец"; ownerInput.value = card.owner || "";
         ownerInput.addEventListener("input", () => { card.owner = ownerInput.value; saveToFirebase(); });
 
         const reactions = document.createElement("div");
@@ -568,184 +572,206 @@
         reactions.append(likeBtn, dislikeBtn);
 
         const delBtn = document.createElement("button");
-        delBtn.className = "delete-btn";
-        delBtn.textContent = "✕";
+        delBtn.className = "delete-btn"; delBtn.textContent = "✕";
         delBtn.onclick = (e) => {
-            e.stopPropagation();
-            if (!confirm("Удалить карточку?")) return;
-            state.cards = state.cards.filter(c => c.id !== card.id);
-            saveToFirebase();
-            render();
+            e.stopPropagation(); if (!confirm("Удалить?")) return;
+            state.cards = state.cards.filter(c => c.id !== card.id); saveToFirebase(); render();
         };
 
-        meta.append(ownerInput, reactions, delBtn);
-        el.append(textEl, meta);
-
-        el.addEventListener("dragstart", (e) => { e.dataTransfer.setData("text/plain", card.id); e.dataTransfer.effectAllowed = "move"; el.classList.add("dragging"); });
+        meta.append(ownerInput, reactions, delBtn); el.append(textEl, meta);
+        el.addEventListener("dragstart", (e) => { e.dataTransfer.setData("text/plain", card.id); el.classList.add("dragging"); });
         el.addEventListener("dragend", () => el.classList.remove("dragging"));
-
         return el;
     }
 
     function getZoneColorByLane(laneId) {
         const lane = state.lanes.find(l => l.id === laneId);
-        if (!lane) return "#4a7dff";
-        const zone = ZONES.find(z => z.id === lane.zoneId);
-        return zone ? zone.color : "#4a7dff";
+        return lane ? (ZONES.find(z => z.id === lane.zoneId)?.color || "#4a7dff") : "#4a7dff";
     }
 
     // ============================================================
-    //  ИГРА "РАЗМИНКА"
+    //  МОДАЛЬНОЕ ОКНО И ВКЛАДКИ
     // ============================================================
-    const openGameBtn = document.getElementById("openGameBtn");
-    const closeGameBtn = document.getElementById("closeGameBtn");
     const gameModal = document.getElementById("gameModal");
+    document.getElementById("openGameBtn").onclick = () => { gameModal.classList.add("open"); resetGame(); };
+    document.getElementById("closeGameBtn").onclick = () => { gameModal.classList.remove("open"); clearTimeout(gameTimeout); };
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById(btn.dataset.tab).classList.add("active");
+        };
+    });
+
+    // ============================================================
+    //  ИГРА 1: РЕАКЦИЯ
+    // ============================================================
     const gameArea = document.getElementById("gameArea");
     const playerNameInput = document.getElementById("playerName");
     const saveResultBtn = document.getElementById("saveResultBtn");
-    const leaderboardList = document.getElementById("leaderboardList");
-
-    let gameTimeout = null;
-    let gameStartTime = 0;
-    let isGameReady = false;
-    let currentTimeResult = 0;
-    let gameState = 'idle'; // idle, waiting, ready, finished
-
-    openGameBtn.onclick = () => {
-        gameModal.classList.add("open");
-        resetGame();
-    };
-
-    closeGameBtn.onclick = () => {
-        gameModal.classList.remove("open");
-        clearTimeout(gameTimeout);
-    };
+    let gameTimeout = null, gameStartTime = 0, currentTimeResult = 0, gameState = 'idle';
 
     function resetGame() {
-        clearTimeout(gameTimeout);
-        gameState = 'idle';
-        isGameReady = false;
-        gameArea.style.backgroundColor = "#eef1f5";
+        clearTimeout(gameTimeout); gameState = 'idle';
+        gameArea.style.backgroundColor = "#eef1f5"; gameArea.style.color = "var(--text)";
         gameArea.textContent = "Нажми, чтобы начать";
-        playerNameInput.classList.remove("visible");
-        saveResultBtn.classList.remove("visible");
+        playerNameInput.classList.remove("visible"); saveResultBtn.classList.remove("visible");
         playerNameInput.value = "";
     }
 
     gameArea.onclick = () => {
         if (gameState === 'idle' || gameState === 'finished') {
-            // Начало игры
             gameState = 'waiting';
-            gameArea.style.backgroundColor = "var(--red-border)";
-            gameArea.style.color = "white";
+            gameArea.style.backgroundColor = "var(--red-border)"; gameArea.style.color = "white";
             gameArea.textContent = "Ждите...";
+            playerNameInput.classList.remove("visible"); saveResultBtn.classList.remove("visible");
             
-            playerNameInput.classList.remove("visible");
-            saveResultBtn.classList.remove("visible");
-
-            // Задержка от 2 до 5 секунд
             const delay = Math.floor(Math.random() * 3000) + 2000;
             gameTimeout = setTimeout(() => {
-                gameState = 'ready';
-                gameArea.style.backgroundColor = "var(--green-border)";
-                gameArea.textContent = "ЖМИ!";
+                gameState = 'ready'; gameArea.style.backgroundColor = "var(--green-border)"; gameArea.textContent = "ЖМИ!";
                 gameStartTime = Date.now();
             }, delay);
-
         } else if (gameState === 'waiting') {
-            // Нажали слишком рано
-            clearTimeout(gameTimeout);
-            gameState = 'idle';
-            gameArea.style.backgroundColor = "#a0a6b0";
-            gameArea.style.color = "white";
-            gameArea.textContent = "Слишком рано! Попробуй снова.";
-            setTimeout(() => { 
-                gameArea.style.backgroundColor = "#eef1f5";
-                gameArea.style.color = "var(--text)";
-                gameArea.textContent = "Нажми, чтобы начать";
-            }, 1500);
-
+            clearTimeout(gameTimeout); gameState = 'idle';
+            gameArea.style.backgroundColor = "#a0a6b0"; gameArea.textContent = "Рано!";
+            setTimeout(() => { resetGame(); }, 1500);
         } else if (gameState === 'ready') {
-            // Успешное нажатие
             gameState = 'finished';
             currentTimeResult = Date.now() - gameStartTime;
-            gameArea.style.backgroundColor = "var(--primary-light)";
-            gameArea.style.color = "var(--primary)";
-            gameArea.textContent = `Твое время: ${currentTimeResult} мс`;
-            
-            playerNameInput.classList.add("visible");
-            saveResultBtn.classList.add("visible");
+            gameArea.style.backgroundColor = "var(--primary-light)"; gameArea.style.color = "var(--primary)";
+            gameArea.textContent = `${currentTimeResult} мс`;
+            playerNameInput.classList.add("visible"); saveResultBtn.classList.add("visible");
             playerNameInput.focus();
         }
     };
 
     saveResultBtn.onclick = () => {
         const name = playerNameInput.value.trim() || "Аноним";
-        const newRecordRef = push(leaderboardRef);
-        set(newRecordRef, { name: name, time: currentTimeResult })
-            .then(() => {
-                saveResultBtn.classList.remove("visible");
-                playerNameInput.classList.remove("visible");
-                gameArea.textContent = "Результат сохранен!";
-            })
-            .catch(e => alert("Ошибка сохранения: " + e.message));
+        set(push(leaderboardRef), { name: name, time: currentTimeResult }).then(() => {
+            saveResultBtn.classList.remove("visible"); playerNameInput.classList.remove("visible");
+        });
     };
 
     function initLeaderboardListener() {
         onValue(leaderboardRef, (snapshot) => {
-            const data = snapshot.val();
-            leaderboardList.innerHTML = "";
-            
-            if (!data) {
-                leaderboardList.innerHTML = '<li style="justify-content: center; color: var(--muted);">Пока нет результатов</li>';
-                return;
-            }
-
-            const records = Object.values(data);
-            // Сортируем по возрастанию времени (меньше = лучше)
-            records.sort((a, b) => a.time - b.time);
-            
-            // Берем топ-5
-            const top5 = records.slice(0, 5);
-
-            top5.forEach((record, index) => {
+            const data = snapshot.val(); const list = document.getElementById("leaderboardList");
+            list.innerHTML = "";
+            if (!data) { list.innerHTML = '<li style="justify-content: center; color: var(--muted);">Пока пусто</li>'; return; }
+            const records = Object.values(data).sort((a, b) => a.time - b.time).slice(0, 5);
+            records.forEach((r, i) => {
                 const li = document.createElement("li");
-                let medal = "";
-                if (index === 0) medal = "🥇 ";
-                if (index === 1) medal = "🥈 ";
-                if (index === 2) medal = "🥉 ";
-                
-                li.innerHTML = `<span>${medal}${record.name}</span> <strong>${record.time} мс</strong>`;
-                leaderboardList.appendChild(li);
+                li.innerHTML = `<span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':''} ${r.name}</span> <strong>${r.time} мс</strong>`;
+                list.appendChild(li);
             });
         });
     }
 
     // ============================================================
+    //  ИГРА 2: БОЛИ КЛИЕНТА
+    // ============================================================
+    const SCENARIOS = [
+        "Клиент купил машину в кредит и боится потерять работу.",
+        "Клиент только что переехал в новую квартиру и делает ремонт.",
+        "Клиент купил щенка для ребенка и не знает, что с ним делать.",
+        "Клиент планирует провести все лето на даче.",
+        "Клиент открыл небольшой бизнес (кофейню)."
+    ];
+    
+    let currentScenario = "";
+
+    document.getElementById("openGameBtn").addEventListener("click", () => {
+        // При открытии выбираем случайный сценарий
+        currentScenario = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+        document.getElementById("painScenarioText").textContent = currentScenario;
+    });
+
+    document.getElementById("addPainBtn").onclick = () => {
+        const author = document.getElementById("painAuthorInput").value.trim() || "Аноним";
+        const idea = document.getElementById("painIdeaInput").value.trim();
+        if (!idea) return;
+        
+        set(push(painsRef), { author: author, idea: idea, scenario: currentScenario }).then(() => {
+            document.getElementById("painIdeaInput").value = "";
+        });
+    };
+
+    function initPainsListener() {
+        onValue(painsRef, (snapshot) => {
+            const data = snapshot.val(); const wall = document.getElementById("painsWall");
+            wall.innerHTML = "";
+            if (!data) { wall.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:0.9rem;">Пока нет идей</div>'; return; }
+            
+            const ideas = Object.values(data).reverse(); // Новые сверху
+            ideas.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "pain-card";
+                div.innerHTML = `<strong>${item.idea}</strong><span class="author">Предложил: ${item.author}</span>`;
+                wall.appendChild(div);
+            });
+        });
+    }
+
+    // ============================================================
+    //  ЭКСПОРТ ДАННЫХ (CSV)
+    // ============================================================
+    document.getElementById("exportBtn").onclick = () => {
+        // Заголовки таблицы
+        const rows = [['Поток', 'Тема (Дорожка)', 'Текст карточки', 'Владелец', 'Лайки', 'Дизлайки']];
+        
+        // Проходим по всем зонам, затем по дорожкам, затем по карточкам
+        ZONES.forEach(zone => {
+            const zoneLanes = state.lanes.filter(l => l.zoneId === zone.id);
+            zoneLanes.forEach(lane => {
+                const laneCards = state.cards.filter(c => c.laneId === lane.id).sort((a,b) => a.order - b.order);
+                laneCards.forEach(card => {
+                    rows.push([
+                        zone.title,
+                        lane.title,
+                        card.text || '',
+                        card.owner || '',
+                        card.likes || 0,
+                        card.dislikes || 0
+                    ]);
+                });
+            });
+        });
+
+        // Конвертируем в CSV (разделитель - точка с запятой для Excel, добавляем BOM для кириллицы)
+        const csvContent = '\ufeff' + rows.map(e => e.map(item => `"${String(item).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+        
+        // Скачиваем
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "workshop_neavto_results.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    // ============================================================
     //  ТАЙМЕР
     // ============================================================
-    let timerId = null;
-    let remain = 20 * 60;
-
-    function fmt(s) { const m = Math.floor(s / 60), ss = s % 60; return String(m).padStart(2, "0") + ":" + String(ss).padStart(2, "0"); }
-    function stopTimer() { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; }
-
+    let timerId = null, remain = 20 * 60;
     document.getElementById("startBtn").onclick = () => {
-        if (timerId) { stopTimer(); return; }
+        if (timerId) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; return; }
         remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60;
-        document.getElementById("clock").textContent = fmt(remain);
         document.getElementById("startBtn").textContent = "Стоп";
         timerId = setInterval(() => {
             remain--;
-            document.getElementById("clock").textContent = fmt(Math.max(0, remain));
-            if (remain <= 0) { stopTimer(); document.getElementById("clock").textContent = "00:00"; alert("Время вышло"); }
+            const m = Math.floor(remain / 60), s = remain % 60;
+            document.getElementById("clock").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+            if (remain <= 0) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; alert("Время вышло"); }
         }, 1000);
     };
-
     document.getElementById("mins").oninput = () => {
         if (!timerId) {
             remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60;
-            document.getElementById("clock").textContent = fmt(remain);
+            const m = Math.floor(remain / 60), s = remain % 60;
+            document.getElementById("clock").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
         }
     };
 </script>
