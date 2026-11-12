@@ -114,10 +114,8 @@
         .form-control:focus { border-color: var(--primary); }
         textarea.form-control { min-height: 60px; resize: vertical; }
 
-        /* Сетка для 8 полей брифа */
         .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .brief-grid .form-group { margin-bottom: 0; }
-        .brief-grid .full-width { grid-column: 1 / -1; }
 
         .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
         .modal-actions .btn { flex: 1; justify-content: center; }
@@ -129,9 +127,14 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .game-area { height: 120px; border-radius: 12px; background: #e2e8f0; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: bold; cursor: pointer; user-select: none; margin-bottom: 12px; }
+        
         .pain-card { background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent); }
         .pain-card strong { display: block; font-size: 0.9rem; margin-bottom: 4px; }
         .pain-card span { font-size: 0.75rem; color: var(--muted); }
+        
+        /* Стили для скролла в лидерборде */
+        #leaderboardList { max-height: 180px; overflow-y: auto; padding-right: 5px; }
+        #painsWall { max-height: 200px; overflow-y: auto; padding-right: 5px; }
     </style>
 </head>
 <body>
@@ -195,15 +198,12 @@
             </div>
         </div>
 
-        <!-- Блок 8 параметров (только для 3 этапа) -->
         <div id="stage3Fields" style="display:none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
             <div style="font-size: 0.9rem; font-weight: bold; color: var(--primary); margin-bottom: 10px;">📋 Маркетинговый бриф</div>
-            
             <div class="form-group">
                 <label>1. Бизнес-цель (Чего хотите достичь?)</label>
                 <textarea class="form-control" id="fBizGoal" placeholder="Например: +10 млн к выручке..."></textarea>
             </div>
-            
             <div class="brief-grid">
                 <div class="form-group">
                     <label>2. Целевой рынок</label>
@@ -214,12 +214,10 @@
                     <input type="text" class="form-control" id="fTargetClients" placeholder="Возраст, боли">
                 </div>
             </div>
-
             <div class="form-group">
                 <label>4. Уникальное ценностное предложение (УТП)</label>
                 <textarea class="form-control" id="fUVP" placeholder="Почему купят у нас?"></textarea>
             </div>
-
             <div class="brief-grid">
                 <div class="form-group">
                     <label>5. Каналы</label>
@@ -230,12 +228,10 @@
                     <input type="text" class="form-control" id="fStrategy" placeholder="Как завлекаем?">
                 </div>
             </div>
-
             <div class="form-group">
                 <label>7. Ключевые метрики</label>
                 <input type="text" class="form-control" id="fMetrics" placeholder="Как измерим успех?">
             </div>
-
             <div class="form-group">
                 <label>8. Факторы успеха</label>
                 <textarea class="form-control" id="fSuccessFactors" placeholder="Что критически важно?"></textarea>
@@ -257,20 +253,26 @@
             <button class="tab-btn active" data-tab="tabReaction">⚡ Реакция</button>
             <button class="tab-btn" data-tab="tabPains">💡 Боли клиента</button>
         </div>
+        
+        <!-- Вкладка Реакция -->
         <div id="tabReaction" class="tab-content active">
             <div class="game-area" id="gameArea">Нажми, чтобы начать</div>
             <div id="nameInputWrap" style="display:none; margin-bottom: 10px;">
                 <input type="text" class="form-control" id="playerName" placeholder="Ваше имя" style="margin-bottom: 6px;">
                 <button class="btn btn-primary" id="saveResultBtn" style="width: 100%;">Сохранить</button>
             </div>
+            <div style="font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; color: var(--primary);">🏆 Результаты всех участников:</div>
             <ul id="leaderboardList" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
         </div>
+
+        <!-- Вкладка Боли клиента -->
         <div id="tabPains" class="tab-content">
             <div style="background: var(--primary-light); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 600; color: var(--primary); font-size: 0.9rem;" id="painScenarioText"></div>
             <input type="text" class="form-control" id="painAuthor" placeholder="Ваше имя (необязательно)" style="margin-bottom: 6px;">
-            <input type="text" class="form-control" id="painIdea" placeholder="Какое решение предложите?" style="margin-bottom: 6px;">
+            <input type="text" class="form-control" id="painIdea" placeholder="Какое неавто-решение предложите?" style="margin-bottom: 6px;">
             <button class="btn btn-primary" id="addPainBtn" style="width: 100%; margin-bottom: 15px;">Предложить</button>
-            <div id="painsWall" style="max-height: 200px; overflow-y: auto;"></div>
+            <div style="font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; color: var(--primary);">💡 Идеи участников:</div>
+            <div id="painsWall"></div>
         </div>
     </div>
 </div>
@@ -312,7 +314,7 @@
 
     let state = { lanes: [], cards: [], stage: 1 };
     let editingCardId = null;
-    let tempCardLaneId = null; // Исправление: запоминаем колонку для новой карточки
+    let tempCardLaneId = null;
 
     const boardRef = ref(db, "ws-board/current");
     const leaderboardRef = ref(db, "ws-board/leaderboard");
@@ -534,7 +536,7 @@
     
     function openEditModal(card) {
         editingCardId = card.id;
-        tempCardLaneId = card.laneId; // Запоминаем ID колонки!
+        tempCardLaneId = card.laneId;
         
         document.getElementById("editCardText").value = card.text || "";
         document.getElementById("editCardOwner").value = card.owner || "";
@@ -564,7 +566,6 @@
         
         let card = state.cards.find(c => c.id === editingCardId);
         if (!card) {
-            // Исправление: используем tempCardLaneId вместо извлечения из строки ID
             card = { id: editingCardId, laneId: tempCardLaneId, text, owner, horizon, fire: 0, question: 0, order: state.cards.length };
             state.cards.push(card);
         } else {
@@ -616,21 +617,113 @@
         link.download = "results_full_brief.csv"; link.click();
     };
 
-    // Игры
+    // ==========================================
+    // ИГРЫ И РАЗМИНКИ
+    // ==========================================
+    
     const gameModal = document.getElementById("gameModal");
-    document.getElementById("openGameBtn").onclick = () => { gameModal.classList.add("open"); resetReactionGame(); document.getElementById("painScenarioText").textContent = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)]; };
+    
+    // Фиксированный сценарий для "Болей клиента"
+    const FIXED_PAIN_SCENARIO = "Клиент оформляет автокредит на новый автомобиль. В разговоре он упоминает, что как раз делает ремонт в новой квартире и переживает за сохранность имущества. Какие неавто-продукты мы можем ему предложить?";
+
+    document.getElementById("openGameBtn").onclick = () => { 
+        gameModal.classList.add("open"); 
+        resetReactionGame(); 
+        document.getElementById("painScenarioText").textContent = FIXED_PAIN_SCENARIO;
+    };
+    
     document.getElementById("closeGameBtn").onclick = () => gameModal.classList.remove("open");
-    document.querySelectorAll(".tab-btn").forEach(btn => { btn.onclick = () => { document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active")); btn.classList.add("active"); document.getElementById(btn.dataset.tab).classList.add("active"); }; });
-    const gameArea = document.getElementById("gameArea"); const nameInputWrap = document.getElementById("nameInputWrap"); let gameTimeout = null, gameStartTime = 0, currentTime = 0, gameState = 'idle';
-    function resetReactionGame() { clearTimeout(gameTimeout); gameState = 'idle'; gameArea.style.background = "#e2e8f0"; gameArea.textContent = "Нажми, чтобы начать"; nameInputWrap.style.display = "none"; }
-    gameArea.onclick = () => { if (gameState === 'idle' || gameState === 'finished') { gameState = 'waiting'; gameArea.style.background = "var(--red-border)"; gameArea.style.color = "white"; gameArea.textContent = "Ждите..."; nameInputWrap.style.display = "none"; gameTimeout = setTimeout(() => { gameState = 'ready'; gameArea.style.background = "var(--green-border)"; gameArea.textContent = "ЖМИ!"; gameStartTime = Date.now(); }, Math.random() * 2000 + 1500); } else if (gameState === 'waiting') { clearTimeout(gameTimeout); resetReactionGame(); gameArea.textContent = "Рано!"; } else if (gameState === 'ready') { gameState = 'finished'; currentTime = Date.now() - gameStartTime; gameArea.style.background = "var(--primary-light)"; gameArea.style.color = "var(--primary)"; gameArea.textContent = `${currentTime} мс`; nameInputWrap.style.display = "block"; } };
-    document.getElementById("saveResultBtn").onclick = () => { const name = document.getElementById("playerName").value.trim() || "Аноним"; set(push(leaderboardRef), { name, time: currentTime }).then(() => nameInputWrap.style.display = "none"); };
-    function initLeaderboard() { onValue(leaderboardRef, (snap) => { const data = snap.val(); const list = document.getElementById("leaderboardList"); list.innerHTML = ""; if (!data) return; Object.values(data).sort((a,b) => a.time - b.time).slice(0, 5).forEach((r, i) => { list.innerHTML += `<li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #eee;"><span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':''} ${r.name}</span> <strong>${r.time} мс</strong></li>`; }); }); }
-    const SCENARIOS = ["Клиент купил машину в кредит и боится потерять работу.","Клиент только что переехал в новую квартиру и делает ремонт.","Клиент купил щенка для ребенка и не знает, что с ним делать.","Клиент планирует провести все лето на даче.","Клиент открыл небольшой бизнес (кофейню)."];
-    document.getElementById("addPainBtn").onclick = () => { const author = document.getElementById("painAuthor").value.trim() || "Аноним"; const idea = document.getElementById("painIdea").value.trim(); if (!idea) return; set(push(painsRef), { author, idea }).then(() => document.getElementById("painIdea").value = ""); };
-    function initPains() { onValue(painsRef, (snap) => { const data = snap.val(); const wall = document.getElementById("painsWall"); wall.innerHTML = ""; if (!data) return; Object.values(data).reverse().forEach(item => { wall.innerHTML += `<div class="pain-card"><strong>${item.idea}</strong><span>Предложил: ${item.author}</span></div>`; }); }); }
+    
+    document.querySelectorAll(".tab-btn").forEach(btn => { 
+        btn.onclick = () => { 
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); 
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active")); 
+            btn.classList.add("active"); 
+            document.getElementById(btn.dataset.tab).classList.add("active"); 
+        }; 
+    });
+
+    // --- Игра Реакция ---
+    const gameArea = document.getElementById("gameArea"); 
+    const nameInputWrap = document.getElementById("nameInputWrap"); 
+    let gameTimeout = null, gameStartTime = 0, currentTime = 0, gameState = 'idle';
+
+    function resetReactionGame() { 
+        clearTimeout(gameTimeout); gameState = 'idle'; gameArea.style.background = "#e2e8f0"; gameArea.style.color = "var(--text)"; gameArea.textContent = "Нажми, чтобы начать"; nameInputWrap.style.display = "none"; 
+    }
+
+    gameArea.onclick = () => { 
+        if (gameState === 'idle' || gameState === 'finished') { 
+            gameState = 'waiting'; gameArea.style.background = "var(--red-border)"; gameArea.style.color = "white"; gameArea.textContent = "Ждите..."; nameInputWrap.style.display = "none"; 
+            gameTimeout = setTimeout(() => { gameState = 'ready'; gameArea.style.background = "var(--green-border)"; gameArea.textContent = "ЖМИ!"; gameStartTime = Date.now(); }, Math.random() * 2000 + 1500); 
+        } else if (gameState === 'waiting') { 
+            clearTimeout(gameTimeout); resetReactionGame(); gameArea.textContent = "Рано!"; 
+        } else if (gameState === 'ready') { 
+            gameState = 'finished'; currentTime = Date.now() - gameStartTime; gameArea.style.background = "var(--primary-light)"; gameArea.style.color = "var(--primary)"; gameArea.textContent = `${currentTime} мс`; nameInputWrap.style.display = "block"; 
+        } 
+    };
+
+    document.getElementById("saveResultBtn").onclick = () => { 
+        const name = document.getElementById("playerName").value.trim() || "Аноним"; 
+        set(push(leaderboardRef), { name, time: currentTime }).then(() => {
+            nameInputWrap.style.display = "none";
+            document.getElementById("playerName").value = "";
+        }); 
+    };
+
+    function initLeaderboard() { 
+        onValue(leaderboardRef, (snap) => { 
+            const data = snap.val(); 
+            const list = document.getElementById("leaderboardList"); 
+            list.innerHTML = ""; 
+            if (!data) {
+                list.innerHTML = '<li style="text-align:center; color:#a8aeb8; padding:10px 0;">Пока нет результатов</li>';
+                return;
+            }
+            // Выводим ВСЕХ участников, сортируя по времени
+            Object.values(data).sort((a,b) => a.time - b.time).forEach((r, i) => { 
+                let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+                list.innerHTML += `<li style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;"><span>${medal} ${r.name}</span> <strong>${r.time} мс</strong></li>`; 
+            }); 
+        }); 
+    }
+
+    // --- Игра Боли клиента ---
+    document.getElementById("addPainBtn").onclick = () => { 
+        const author = document.getElementById("painAuthor").value.trim() || "Аноним"; 
+        const idea = document.getElementById("painIdea").value.trim(); 
+        if (!idea) return; 
+        set(push(painsRef), { author, idea }).then(() => document.getElementById("painIdea").value = ""); 
+    };
+
+    function initPains() { 
+        onValue(painsRef, (snap) => { 
+            const data = snap.val(); 
+            const wall = document.getElementById("painsWall"); 
+            wall.innerHTML = ""; 
+            if (!data) {
+                wall.innerHTML = '<div style="text-align:center; color:#a8aeb8; font-size:0.85rem; padding:10px 0;">Пока нет идей. Будьте первым!</div>';
+                return;
+            }
+            Object.values(data).reverse().forEach(item => { 
+                wall.innerHTML += `<div class="pain-card"><strong>${item.idea}</strong><span>Предложил: ${item.author}</span></div>`; 
+            }); 
+        }); 
+    }
+
+    // --- Таймер ---
     let timerId = null, remain = 20 * 60;
-    document.getElementById("startBtn").onclick = () => { if (timerId) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; return; } remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60; document.getElementById("startBtn").textContent = "Стоп"; timerId = setInterval(() => { remain--; const m = Math.floor(remain / 60), s = remain % 60; document.getElementById("clock").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; if (remain <= 0) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; alert("Время вышло"); } }, 1000); };
+    document.getElementById("startBtn").onclick = () => { 
+        if (timerId) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; return; } 
+        remain = Math.max(1, parseInt(document.getElementById("mins").value, 10) || 20) * 60; 
+        document.getElementById("startBtn").textContent = "Стоп"; 
+        timerId = setInterval(() => { 
+            remain--; 
+            const m = Math.floor(remain / 60), s = remain % 60; 
+            document.getElementById("clock").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`; 
+            if (remain <= 0) { clearInterval(timerId); timerId = null; document.getElementById("startBtn").textContent = "Старт"; alert("Время вышло"); } 
+        }, 1000); 
+    };
 </script>
 </body>
 </html>
